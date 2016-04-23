@@ -130,11 +130,6 @@ void ADXL362_SetRegisterValue(uint16_t registerValue,
     ADXL362_BUFFER_LENGTH = 2 + bytesNumber;
 
     NRF_GPIO->OUTCLR = (1 << 15); //SS
-    /*APP_ERROR_CHECK(nrf_drv_spi_transfer(&SPIM0,
-                                        ADXL362_TX_BUFFER,
-                                        ADXL362_BUFFER_LENGTH,
-                                        ADXL362_RX_BUFFER,
-                                        ADXL362_BUFFER_LENGTH ));*/
     (void)hal_spi_trx(  HAL_SPI_ID_SPI0,
                         ADXL362_BUFFER_LENGTH,
                         &(ADXL362_TX_BUFFER[0]),
@@ -167,11 +162,6 @@ void ADXL362_GetRegisterValue(uint8_t  registerAddress,
     ADXL362_BUFFER_LENGTH = 2 + bytesNumber;
 
     NRF_GPIO->OUTCLR = (1 << 15); //SS
-    /*APP_ERROR_CHECK(nrf_drv_spi_transfer(&SPIM0,
-                                        ADXL362_TX_BUFFER,
-                                        ADXL362_BUFFER_LENGTH,
-                                        ADXL362_RX_BUFFER,
-                                        ADXL362_BUFFER_LENGTH ));*/
     (void)hal_spi_trx(  HAL_SPI_ID_SPI0,
                         ADXL362_BUFFER_LENGTH,
                         &(ADXL362_TX_BUFFER[0]),
