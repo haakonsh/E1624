@@ -27,51 +27,55 @@ Project File Date:  04/23/2016
 <h2>Output:</h2>
 Rebuild target 'nrf52832_xxaa'
 compiling spi_and_gpiote.c...
-..\..\..\..\..\components\libraries\util\sdk_errors.h(46): error:  #5: cannot open source input file "nrf_error.h": No such file or directory
-  #include "nrf_error.h"
-..\..\..\..\..\..\application\src\spi_and_gpiote.c: 0 warnings, 1 error
+..\..\..\..\..\..\application\src\spi_and_gpiote.c(29): error:  #20: identifier "RTC0_INSTANCE_INDEX" is undefined
+  const nrf_drv_rtc_t rtc = 
+RF_DRV_RTC_INSTANCE(0);
+..\..\..\..\..\..\application\src\spi_and_gpiote.c(34): error:  #20: identifier "RTC0_CONFIG_IRQ_PRIORITY" is undefined
+      .interrupt_priority = RTC0_CONFIG_IRQ_PRIORITY,
+..\..\..\..\..\..\application\src\spi_and_gpiote.c(35): error:  #20: identifier "RTC0_CONFIG_FREQUENCY" is undefined
+      .tick_latency       = 
+TC_US_TO_TICKS(NRF_MAXIMUM_LATENCY_US,RTC0_CONFIG_FREQUENCY),
+..\..\..\..\..\..\application\src\spi_and_gpiote.c(36): error:  #20: identifier "RTC0_CONFIG_RELIABLE" is undefined
+      .reliable           = RTC0_CONFIG_RELIABLE,
+..\..\..\..\..\..\application\src\spi_and_gpiote.c: 0 warnings, 4 errors
 compiling nrf_drv_clock.c...
-..\..\..\..\..\components\libraries\util\sdk_errors.h(46): error:  #5: cannot open source input file "nrf_error.h": No such file or directory
-  #include "nrf_error.h"
-..\..\..\..\..\components\drivers_nrf\clock\nrf_drv_clock.c: 0 warnings, 1 error
+..\..\..\..\..\components\drivers_nrf\clock\nrf_drv_clock.c(127): error:  #20: identifier "CLOCK_CONFIG_XTAL_FREQ" is undefined
+      nrf_clock_xtalfreq_set(CLOCK_CONFIG_XTAL_FREQ);
+..\..\..\..\..\components\drivers_nrf\clock\nrf_drv_clock.c(128): error:  #20: identifier "CLOCK_CONFIG_LF_SRC" is undefined
+      nrf_clock_lf_src_set((nrf_clock_lfclk_t)CLOCK_CONFIG_LF_SRC);
+..\..\..\..\..\components\drivers_nrf\clock\nrf_drv_clock.c(129): error:  #20: identifier "CLOCK_CONFIG_IRQ_PRIORITY" is undefined
+      nrf_drv_common_irq_enable(POWER_CLOCK_IRQn, CLOCK_CONFIG_IRQ_PRIORITY);
+..\..\..\..\..\components\drivers_nrf\clock\nrf_drv_clock.c: 0 warnings, 3 errors
 compiling nrf_drv_common.c...
-"no source": Error:  #5: cannot open source input file "..\..\..\..\..\components\drivers_nrf\common\nrf_drv_common.c": No such file or directory
-..\..\..\..\..\components\drivers_nrf\common\nrf_drv_common.c: 0 warnings, 1 error
 compiling nrf_drv_rtc.c...
-..\..\..\..\..\components\drivers_nrf\rtc\nrf_drv_rtc.h(19): error:  #5: cannot open source input file "nrf_drv_common.h": No such file or directory
-  #include "nrf_drv_common.h"
-..\..\..\..\..\components\drivers_nrf\rtc\nrf_drv_rtc.c: 0 warnings, 1 error
+..\..\..\..\..\components\drivers_nrf\rtc\nrf_drv_rtc.c(27): error:  #94-D: the size of an array must be greater than zero
+  static nrf_drv_rtc_handler_t m_handlers[
+TC_COUNT];
+..\..\..\..\..\components\drivers_nrf\rtc\nrf_drv_rtc.c(28): error:  #94-D: the size of an array must be greater than zero
+  static nrf_drv_rtc_cb_t      m_cb[
+TC_COUNT];
+..\..\..\..\..\components\drivers_nrf\rtc\nrf_drv_rtc.c(40): error:  #29: expected an expression
+  };
+..\..\..\..\..\components\drivers_nrf\rtc\nrf_drv_rtc.c(30): error:  #1514: an empty initializer is invalid for an array with unspecified bound
+  static const nrf_drv_rtc_config_t m_default_config[] = {
+..\..\..\..\..\components\drivers_nrf\rtc\nrf_drv_rtc.c(234): warning:  #177-D: function "nrf_drv_rtc_int_handler" was declared but never referenced
+  __STATIC_INLINE void nrf_drv_rtc_int_handler(NRF_RTC_Type * p_reg,
+..\..\..\..\..\components\drivers_nrf\rtc\nrf_drv_rtc.c: 1 warning, 4 errors
 compiling nrf_nvic.c...
-"no source": Error:  #5: cannot open source input file "..\..\..\..\..\components\drivers_nrf\nrf_soc_nosd\nrf_nvic.c": No such file or directory
-..\..\..\..\..\components\drivers_nrf\nrf_soc_nosd\nrf_nvic.c: 0 warnings, 1 error
 compiling nrf_soc.c...
-"no source": Error:  #5: cannot open source input file "..\..\..\..\..\components\drivers_nrf\nrf_soc_nosd\nrf_soc.c": No such file or directory
-..\..\..\..\..\components\drivers_nrf\nrf_soc_nosd\nrf_soc.c: 0 warnings, 1 error
 compiling app_error.c...
-..\..\..\..\..\components\libraries\util\sdk_errors.h(46): error:  #5: cannot open source input file "nrf_error.h": No such file or directory
-  #include "nrf_error.h"
-..\..\..\..\..\components\libraries\util\app_error.c: 0 warnings, 1 error
 compiling app_error_weak.c...
-..\..\..\..\..\components\libraries\util\sdk_errors.h(46): error:  #5: cannot open source input file "nrf_error.h": No such file or directory
-  #include "nrf_error.h"
-..\..\..\..\..\components\libraries\util\app_error_weak.c: 0 warnings, 1 error
 compiling app_util_platform.c...
-..\..\..\..\..\components\libraries\util\sdk_errors.h(46): error:  #5: cannot open source input file "nrf_error.h": No such file or directory
-  #include "nrf_error.h"
-..\..\..\..\..\components\libraries\util\app_util_platform.c: 0 warnings, 1 error
 compiling nrf_assert.c...
-..\..\..\..\..\components\libraries\util\sdk_errors.h(46): error:  #5: cannot open source input file "nrf_error.h": No such file or directory
-  #include "nrf_error.h"
-..\..\..\..\..\components\libraries\util\nrf_assert.c: 0 warnings, 1 error
 compiling ADXL362_drv.c...
-..\..\..\..\..\components\libraries\util\sdk_errors.h(46): error:  #5: cannot open source input file "nrf_error.h": No such file or directory
-  #include "nrf_error.h"
+..\..\..\..\..\..\drivers\src\ADXL362_drv.c(57): error:  #5: cannot open source input file "nrf_drv_spi.h": No such file or directory
+  #include "nrf_drv_spi.h"
 ..\..\..\..\..\..\drivers\src\ADXL362_drv.c: 0 warnings, 1 error
 compiling SEGGER_RTT.c...
 compiling SEGGER_RTT_printf.c...
 assembling arm_startup_nrf52.s...
 compiling system_nrf52.c...
-".\_build\nrf52832_xxaa.axf" - 8 Error(s), 0 Warning(s).
+".\_build\nrf52832_xxaa.axf" - 12 Error(s), 1 Warning(s).
 
 <h2>Software Packages used:</h2>
 
