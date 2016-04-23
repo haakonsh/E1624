@@ -40,19 +40,19 @@ Thumbs.db
 #############################
 
 # Drivers #
-C:\Users\haho\Dropbox\Bachelor_2016\Prosjektmappe\Software\E1624\nRF5_SDK_11.0.0_89a8197\components\drivers_nrf\clock
-C:\Users\haho\Dropbox\Bachelor_2016\Prosjektmappe\Software\E1624\nRF5_SDK_11.0.0_89a8197\components\drivers_nrf\gpiote
-C:\Users\haho\Dropbox\Bachelor_2016\Prosjektmappe\Software\E1624\nRF5_SDK_11.0.0_89a8197\components\drivers_nrf\hal
-C:\Users\haho\Dropbox\Bachelor_2016\Prosjektmappe\Software\E1624\nRF5_SDK_11.0.0_89a8197\components\drivers_nrf\lpcomp
-C:\Users\haho\Dropbox\Bachelor_2016\Prosjektmappe\Software\E1624\nRF5_SDK_11.0.0_89a8197\components\drivers_nrf\rtc
+nRF5_SDK_11.0.0_89a8197/components/drivers_nrf/clock*
+nRF5_SDK_11.0.0_89a8197/components/drivers_nrf/gpiote*
+nRF5_SDK_11.0.0_89a8197/components/drivers_nrf/hal*
+nRF5_SDK_11.0.0_89a8197/components/drivers_nrf/lpcomp*
+nRF5_SDK_11.0.0_89a8197/components/drivers_nrf/rtc*
 
 # Libraries #
-C:\Users\haho\Dropbox\Bachelor_2016\Prosjektmappe\Software\E1624\nRF5_SDK_11.0.0_89a8197\components\libraries\util
+nRF5_SDK_11.0.0_89a8197/components/libraries/util*
 
 # Toolchain #
-C:\Users\haho\Dropbox\Bachelor_2016\Prosjektmappe\Software\E1624\nRF5_SDK_11.0.0_89a8197\components\toolchain
+nRF5_SDK_11.0.0_89a8197/components/toolchain*
 
 # External #
-C:\Users\haho\Dropbox\Bachelor_2016\Prosjektmappe\Software\E1624\nRF5_SDK_11.0.0_89a8197\external
+nRF5_SDK_11.0.0_89a8197/external*
 
 #############################
