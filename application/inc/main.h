@@ -3,7 +3,7 @@
 #endif
 
 #include "stdio.h"
-#include "nrf_drv_spi.h"
+//#include "nrf_drv_spi.h"
 #include "nrf_drv_rtc.h"
 
 /* Debugging tools, UART and ERRORS */
