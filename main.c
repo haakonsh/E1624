@@ -47,6 +47,7 @@ const nrf_drv_timer_config_t timer0_config = {
 	.p_context					= NULL
 };
 
+/* Timer event handler. Not used since timer is used only for PPI */
 void timer_event_handler(nrf_timer_event_t event_type, void * p_context){}
 
 nrf_drv_lpcomp_config_t lpcomp_config = {
@@ -54,24 +55,16 @@ nrf_drv_lpcomp_config_t lpcomp_config = {
    .input              = NRF_LPCOMP_INPUT_3,
 	 .interrupt_priority = LPCOMP_CONFIG_IRQ_PRIORITY
  };
-	// Timer even handler.
-	//Not used since timer is used only for PPI.
-
 
 void lpcomp_event_handler(nrf_lpcomp_event_t event){
 
-				nrf_timer_task_trigger(
-																NRF_TIMER0,
-																NRF_TIMER_TASK_CAPTURE0);
+				nrf_timer_task_trigger(NRF_TIMER0, NRF_TIMER_TASK_CAPTURE0);
 
-				Counter = nrf_drv_timer_capture_get(
-																				&timer0,
-																				NRF_TIMER_CC_CHANNEL0);
+				Counter = nrf_drv_timer_capture_get(&timer0, NRF_TIMER_CC_CHANNEL0);
 				SEGGER_RTT_printf(0,"Counter = %u\n",Counter);
 
 }
 lpcomp_events_handler_t p_lpcomp_event_handler = lpcomp_event_handler;
-
 
 /** @brief Function for initializing the PPI peripheral.
 */
@@ -123,11 +116,7 @@ int main(void)
 		SEGGER_RTT_WriteString(0,"Hello Lars!\n");
 
 
-    ppi_init();    // PPI to redirect the event to timer start/stop tasks.
-
-
-
-
+    	ppi_init();    // PPI to redirect the event to timer start/stop tasks.
 
     while (true)
     {
