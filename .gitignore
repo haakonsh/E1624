@@ -58,4 +58,8 @@ nRF5_SDK_11.0.0_89a8197/external*
 # Build #
 nRF5_SDK_11.0.0_89a8197/examples/peripheral/rtc/pca10040/arm5_no_packs/_build*
 
+# JLink log and settings #
+nRF5_SDK_11.0.0_89a8197/examples/peripheral/rtc/pca10040/arm5_no_packs/JLinkLog.txt
+nRF5_SDK_11.0.0_89a8197/examples/peripheral/rtc/pca10040/arm5_no_packs/JLinkSettings.ini
+
 #############################
