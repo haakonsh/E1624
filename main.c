@@ -32,6 +32,7 @@
 #include "nrf_drv_config.h"
 #include "app_util_platform.h"
 #include "SEGGER_RTT.h"
+#include "main.h"
 
 volatile uint32_t Counter = 0;
 
