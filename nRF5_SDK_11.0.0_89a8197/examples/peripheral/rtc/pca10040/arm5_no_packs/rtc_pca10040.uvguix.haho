@@ -1348,14 +1348,14 @@
       <Doc>
         <Name>..\..\..\..\..\..\main.c</Name>
         <ColumnNumber>2</ColumnNumber>
-        <TopLine>21</TopLine>
+        <TopLine>28</TopLine>
         <CurrentLine>47</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>
         <PaneID>0</PaneID>
       </Doc>
       <Doc>
-        <Name>C:\Users\haho\Dropbox\Bachelor_2016\Prosjektmappe\Software\E1624\application\inc\main.h</Name>
+        <Name>..\..\..\..\..\..\application\inc\main.h</Name>
         <ColumnNumber>34</ColumnNumber>
         <TopLine>1</TopLine>
         <CurrentLine>26</CurrentLine>

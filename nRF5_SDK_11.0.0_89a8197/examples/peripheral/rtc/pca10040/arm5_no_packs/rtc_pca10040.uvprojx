@@ -488,6 +488,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\components\libraries\util\nrf_assert.c</FilePath>
             </File>
+            <File>
+              <FileName>nrf_log.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\components\libraries\util\nrf_log.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
