@@ -69,24 +69,17 @@ lpcomp_events_handler_t p_lpcomp_event_handler = lpcomp_event_handler;
 */
 static void ppi_init(void)
 {
-    uint32_t err_code = NRF_SUCCESS;
+	/* Initialize ppi */
+    APP_ERROR_CHECK(nrf_drv_ppi_init());
 
-    err_code = nrf_drv_ppi_init();
-    APP_ERROR_CHECK(err_code);
-
-    // Configure 1st available PPI channel to stop TIMER0 counter on TIMER1 COMPARE[0] match, which is every even number of seconds.
-    err_code = nrf_drv_ppi_channel_alloc(&ppi_channel1);
-    APP_ERROR_CHECK(err_code);
-    err_code = nrf_drv_ppi_channel_assign(ppi_channel1,
+    /* Configure 1st available PPI channel to increment TIMER0 counter on NRF_LPCOMP_EVENT_UP event */
+    APP_ERROR_CHECK(nrf_drv_ppi_channel_alloc(&ppi_channel1));
+    APP_ERROR_CHECK(nrf_drv_ppi_channel_assign(ppi_channel1,
                                          NRF_LPCOMP_EVENT_UP_address,
-                                         nrf_drv_timer_task_address_get(&timer0, NRF_TIMER_TASK_COUNT));
+                                         nrf_drv_timer_task_address_get(&timer0, NRF_TIMER_TASK_COUNT)));
 
-    APP_ERROR_CHECK(err_code);
-
-    // Enable both configured PPI channels
-    err_code = nrf_drv_ppi_channel_enable(ppi_channel1);
-    APP_ERROR_CHECK(err_code);
-
+    /* Enable the configured PPI channel */
+    APP_ERROR_CHECK(nrf_drv_ppi_channel_enable(ppi_channel1));
 }
 
 /**
