@@ -25,7 +25,6 @@
 #include <stdio.h>
 #include "nrf_drv_lpcomp.h"
 #include "app_error.h"
-//#include "boards.h"
 #include "nrf_drv_ppi.h"
 #include "nrf_drv_timer.h"
 #include "nordic_common.h"
@@ -51,17 +50,17 @@ const nrf_drv_timer_config_t timer0_config = {
 void timer_event_handler(nrf_timer_event_t event_type, void * p_context){}
 
 nrf_drv_lpcomp_config_t lpcomp_config = {
-   .hal                = {.reference = NRF_LPCOMP_REF_SUPPLY_3_8, .detection = NRF_LPCOMP_DETECT_UP},
-   .input              = NRF_LPCOMP_INPUT_3,
-	 .interrupt_priority = LPCOMP_CONFIG_IRQ_PRIORITY
+	.hal                = {.reference = NRF_LPCOMP_REF_SUPPLY_3_8, .detection = NRF_LPCOMP_DETECT_UP},
+	.input              = NRF_LPCOMP_INPUT_3,
+	.interrupt_priority = LPCOMP_CONFIG_IRQ_PRIORITY
  };
 
 void lpcomp_event_handler(nrf_lpcomp_event_t event){
 
-				nrf_timer_task_trigger(NRF_TIMER0, NRF_TIMER_TASK_CAPTURE0);
+	nrf_timer_task_trigger(NRF_TIMER0, NRF_TIMER_TASK_CAPTURE0);
 
-				Counter = nrf_drv_timer_capture_get(&timer0, NRF_TIMER_CC_CHANNEL0);
-				SEGGER_RTT_printf(0,"Counter = %u\n",Counter);
+	Counter = nrf_drv_timer_capture_get(&timer0, NRF_TIMER_CC_CHANNEL0);
+	SEGGER_RTT_printf(0,"Counter = %u\n", Counter);
 
 }
 lpcomp_events_handler_t p_lpcomp_event_handler = lpcomp_event_handler;
@@ -89,14 +88,6 @@ static void ppi_init(void)
     APP_ERROR_CHECK(err_code);
 
 }
-/** @brief Function for Timer 0 initialization, which will be started and stopped by timer1 and timer2 using PPI.
-*/
-static void timer0_init(void)
-{
-    ret_code_t err_code = nrf_drv_timer_init(&timer0, &timer0_config, timer_event_handler);
-    APP_ERROR_CHECK(err_code);
-		NRF_LPCOMP->HYST = COMP_HYST_HYST_Hyst50mV;
-}
 
 /**
  * @brief Function for application main entry.
@@ -104,17 +95,13 @@ static void timer0_init(void)
 
 int main(void)
 {
-		timer0_init(); // Timer used to blink the LEDs.
+		APP_ERROR_CHECK(nrf_drv_timer_init(&timer0, &timer0_config, timer_event_handler));
 
-		ret_code_t err_code;
-		err_code = nrf_drv_lpcomp_init(&lpcomp_config,
-														 lpcomp_event_handler);
-		APP_ERROR_CHECK(err_code);
+		APP_ERROR_CHECK(nrf_drv_lpcomp_init(&lpcomp_config, lpcomp_event_handler));
+		NRF_LPCOMP->HYST = COMP_HYST_HYST_Hyst50mV;
 		nrf_drv_lpcomp_enable();
 
-
 		SEGGER_RTT_WriteString(0,"Hello Lars!\n");
-
 
     	ppi_init();    // PPI to redirect the event to timer start/stop tasks.
 
