@@ -61,7 +61,6 @@ void lpcomp_event_handler(nrf_lpcomp_event_t event){
 
 	Counter = nrf_drv_timer_capture_get(&timer0, NRF_TIMER_CC_CHANNEL0);
 	SEGGER_RTT_printf(0,"Counter = %u\n", Counter);
-
 }
 lpcomp_events_handler_t p_lpcomp_event_handler = lpcomp_event_handler;
 
