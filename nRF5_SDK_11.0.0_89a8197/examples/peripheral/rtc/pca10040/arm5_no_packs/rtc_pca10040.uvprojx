@@ -434,19 +434,9 @@
           <GroupName>nRF_Drivers</GroupName>
           <Files>
             <File>
-              <FileName>nrf_drv_clock.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\components\drivers_nrf\clock\nrf_drv_clock.c</FilePath>
-            </File>
-            <File>
               <FileName>nrf_drv_common.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\components\drivers_nrf\common\nrf_drv_common.c</FilePath>
-            </File>
-            <File>
-              <FileName>nrf_drv_rtc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\components\drivers_nrf\rtc\nrf_drv_rtc.c</FilePath>
             </File>
             <File>
               <FileName>nrf_nvic.c</FileName>
@@ -457,21 +447,6 @@
               <FileName>nrf_soc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\components\drivers_nrf\nrf_soc_nosd\nrf_soc.c</FilePath>
-            </File>
-            <File>
-              <FileName>hal_serial.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\..\drivers\src\hal_serial.c</FilePath>
-            </File>
-            <File>
-              <FileName>hal_spi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\..\drivers\src\hal_spi.c</FilePath>
-            </File>
-            <File>
-              <FileName>nrf_drv_gpiote.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\components\drivers_nrf\gpiote\nrf_drv_gpiote.c</FilePath>
             </File>
             <File>
               <FileName>nrf_drv_lpcomp.c</FileName>
@@ -512,16 +487,6 @@
               <FileName>nrf_assert.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\components\libraries\util\nrf_assert.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>ADXL362_driver</GroupName>
-          <Files>
-            <File>
-              <FileName>ADXL362_drv.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\..\drivers\src\ADXL362_drv.c</FilePath>
             </File>
           </Files>
         </Group>

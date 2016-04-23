@@ -1392,9 +1392,9 @@
       </Doc>
       <Doc>
         <Name>..\..\..\..\..\components\libraries\util\sdk_common.h</Name>
-        <ColumnNumber>54</ColumnNumber>
+        <ColumnNumber>21</ColumnNumber>
         <TopLine>1</TopLine>
-        <CurrentLine>38</CurrentLine>
+        <CurrentLine>33</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>
         <PaneID>0</PaneID>
