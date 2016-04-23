@@ -6,6 +6,9 @@
 //#include "nrf_drv_spi.h"
 #include "nrf_drv_rtc.h"
 
+/* Event adress get function does not work */
+#define NRF_LPCOMP_EVENT_UP_address 0x40013108UL
+
 /* Debugging tools, UART and ERRORS */
 //#define DEBUG_WITH_UART       // Debug ADXL362 with UART (Segger RTT)
 //#define DEBUG_WITH_ERRORS     // Debug ADXL362 with ERRORS (app_error_handler)

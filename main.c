@@ -27,60 +27,52 @@
 #include "nrf_delay.h"
 #include "nrf_drv_lpcomp.h"
 #include "app_error.h"
-//#include "boards.h" 
+//#include "boards.h"
 #include "nrf_drv_ppi.h"
 #include "nrf_drv_timer.h"
 #include "nordic_common.h"
-#include "nrf_drv_config.h"     
+#include "nrf_drv_config.h"
 #include "app_util_platform.h"
 
-#define NRF_LPCOMP_EVENT_UP_address 0x40013108UL
-
-volatile uint32_t Counter = 10;
+volatile uint32_t Counter = 0;
 
 const nrf_drv_timer_t timer0 = NRF_DRV_TIMER_INSTANCE(0);
 nrf_ppi_channel_t ppi_channel1;
 
-
 const nrf_drv_timer_config_t timer0_config = {
 	.frequency					= NRF_TIMER_FREQ_31250Hz,
-	.mode								= NRF_TIMER_MODE_LOW_POWER_COUNTER,
+	.mode						= NRF_TIMER_MODE_LOW_POWER_COUNTER,
 	.bit_width					= NRF_TIMER_BIT_WIDTH_16,
-	.interrupt_priority = TIMER0_CONFIG_IRQ_PRIORITY,
+	.interrupt_priority 		= TIMER0_CONFIG_IRQ_PRIORITY,
 	.p_context					= NULL
 };
 
 void timer_event_handler(nrf_timer_event_t event_type, void * p_context){}
 
-//nrf_lpcomp_config_t lpcomp_hal = {
-//	.reference =  NRF_LPCOMP_REF_EXT_REF0,
-//	.detection =  NRF_LPCOMP_DETECT_UP 
-// };
-
 nrf_drv_lpcomp_config_t lpcomp_config = {
-   .hal                = {.reference = NRF_LPCOMP_REF_SUPPLY_3_8, .detection = NRF_LPCOMP_DETECT_UP}, 						 
-   .input              = NRF_LPCOMP_INPUT_3,	
+   .hal                = {.reference = NRF_LPCOMP_REF_SUPPLY_3_8, .detection = NRF_LPCOMP_DETECT_UP},
+   .input              = NRF_LPCOMP_INPUT_3,
 	 .interrupt_priority = LPCOMP_CONFIG_IRQ_PRIORITY
  };
-	// Timer even handler. 
+	// Timer even handler.
 	//Not used since timer is used only for PPI.
 
 
 void lpcomp_event_handler(nrf_lpcomp_event_t event){
-		
+
 				nrf_timer_task_trigger(
 																NRF_TIMER0,
 																NRF_TIMER_TASK_CAPTURE0);
-			
+
 				Counter = nrf_drv_timer_capture_get(
 																				&timer0,
 																				NRF_TIMER_CC_CHANNEL0);
 				SEGGER_RTT_printf(0,"Counter = %u\n",Counter);
-	
+
 }
 lpcomp_events_handler_t p_lpcomp_event_handler = lpcomp_event_handler;
 
-	
+
 /** @brief Function for initializing the PPI peripheral.
 */
 static void ppi_init(void)
@@ -96,7 +88,7 @@ static void ppi_init(void)
     err_code = nrf_drv_ppi_channel_assign(ppi_channel1,
                                          NRF_LPCOMP_EVENT_UP_address,
                                          nrf_drv_timer_task_address_get(&timer0, NRF_TIMER_TASK_COUNT));
-	
+
     APP_ERROR_CHECK(err_code);
 
     // Enable both configured PPI channels
@@ -126,20 +118,20 @@ int main(void)
 														 lpcomp_event_handler);
 		APP_ERROR_CHECK(err_code);
 		nrf_drv_lpcomp_enable();
-		
-		
+
+
 		SEGGER_RTT_WriteString(0,"Hello Lars!\n");
 
 
     ppi_init();    // PPI to redirect the event to timer start/stop tasks.
 
 
-					
 
-  
+
+
     while (true)
     {
-				
+
     }
 }
 
