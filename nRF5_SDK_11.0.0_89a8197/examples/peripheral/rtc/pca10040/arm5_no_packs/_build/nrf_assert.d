@@ -17,9 +17,3 @@
 .\_build\nrf_assert.o: C:\Keil_v5\ARM\ARMCC_505u2\Bin\..\include\stdio.h
 .\_build\nrf_assert.o: C:\Keil_v5\ARM\ARMCC_505u2\Bin\..\include\stdbool.h
 .\_build\nrf_assert.o: ..\..\..\..\..\components\libraries\util\sdk_errors.h
-.\_build\nrf_assert.o: ..\..\..\..\..\components\drivers_nrf\nrf_soc_nosd\nrf_error.h
-.\_build\nrf_assert.o: ..\..\..\..\..\components\libraries\util\nordic_common.h
-.\_build\nrf_assert.o: ..\..\..\..\..\components\libraries\util\nrf_log.h
-.\_build\nrf_assert.o: C:\Keil_v5\ARM\ARMCC_505u2\Bin\..\include\stdarg.h
-.\_build\nrf_assert.o: ..\..\..\..\..\components\libraries\util\app_util.h
-.\_build\nrf_assert.o: ..\..\..\..\..\components\libraries\util\app_error_weak.h

@@ -16,9 +16,3 @@
 .\_build\app_error.o: ..\..\..\..\..\components\libraries\util\app_error.h
 .\_build\app_error.o: C:\Keil_v5\ARM\ARMCC_505u2\Bin\..\include\stdbool.h
 .\_build\app_error.o: ..\..\..\..\..\components\libraries\util\sdk_errors.h
-.\_build\app_error.o: ..\..\..\..\..\components\drivers_nrf\nrf_soc_nosd\nrf_error.h
-.\_build\app_error.o: ..\..\..\..\..\components\libraries\util\nordic_common.h
-.\_build\app_error.o: ..\..\..\..\..\components\libraries\util\nrf_log.h
-.\_build\app_error.o: C:\Keil_v5\ARM\ARMCC_505u2\Bin\..\include\stdarg.h
-.\_build\app_error.o: ..\..\..\..\..\components\libraries\util\app_util.h
-.\_build\app_error.o: ..\..\..\..\..\components\libraries\util\app_error_weak.h

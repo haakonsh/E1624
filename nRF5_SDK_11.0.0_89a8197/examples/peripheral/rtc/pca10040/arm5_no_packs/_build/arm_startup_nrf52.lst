@@ -580,27 +580,28 @@ ARM Macro Assembler    Page 9
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
 erwork --depend=.\_build\arm_startup_nrf52.d -o.\_build\arm_startup_nrf52.o -IC
-:\Users\haho\Documents\nRF_SDK\nRF5_SDK_11.0.0_89a8197\examples\peripheral\rtc\
-pca10040\arm5_no_packs\RTE -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include 
--IC:\Keil_v5\ARM\PACK\NordicSemiconductor\nRF_DeviceFamilyPack\8.5.0\Device\Inc
+:\Users\haho\Dropbox\Bachelor_2016\Prosjektmappe\Software\E1624\nRF5_SDK_11.0.0
+_89a8197\examples\peripheral\rtc\pca10040\arm5_no_packs\RTE -IC:\Keil_v5\ARM\PA
+CK\ARM\CMSIS\4.5.0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\NordicSemiconductor\nRF_
 
 
 
 ARM Macro Assembler    Page 10 
 
 
-lude -IC:\Keil_v5\ARM\PACK\NordicSemiconductor\nRF_DeviceFamilyPack\8.6.0\Devic
-e\Include --predefine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA 5
-14" --predefine="_RTE_ SETA 1" --predefine="NRF52 SETA 1" --predefine="BSP_DEFI
-NES_ONLY SETA 1" --predefine="BOARD_PCA10040 SETA 1" --predefine="NRF52_PAN_12 
-SETA 1" --predefine="NRF52_PAN_15 SETA 1" --predefine="NRF52_PAN_20 SETA 1" --p
-redefine="NRF52_PAN_30 SETA 1" --predefine="NRF52_PAN_31 SETA 1" --predefine="N
-RF52_PAN_36 SETA 1" --predefine="NRF52_PAN_51 SETA 1" --predefine="NRF52_PAN_53
- SETA 1" --predefine="NRF52_PAN_54 SETA 1" --predefine="NRF52_PAN_55 SETA 1" --
-predefine="NRF52_PAN_58 SETA 1" --predefine="NRF52_PAN_62 SETA 1" --predefine="
-NRF52_PAN_63 SETA 1" --predefine="NRF52_PAN_64 SETA 1" --predefine="CONFIG_GPIO
-_AS_PINRESET SETA 1" --predefine="NRF52 SETA 1" --list=.\_build\arm_startup_nrf
-52.lst RTE\Device\nRF52832_xxAA\arm_startup_nrf52.s
+DeviceFamilyPack\8.5.0\Device\Include -IC:\Keil_v5\ARM\PACK\NordicSemiconductor
+\nRF_DeviceFamilyPack\8.6.0\Device\Include --predefine="__MICROLIB SETA 1" --pr
+edefine="__UVISION_VERSION SETA 514" --predefine="_RTE_ SETA 1" --predefine="NR
+F52 SETA 1" --predefine="BSP_DEFINES_ONLY SETA 1" --predefine="BOARD_PCA10040 S
+ETA 1" --predefine="NRF52_PAN_12 SETA 1" --predefine="NRF52_PAN_15 SETA 1" --pr
+edefine="NRF52_PAN_20 SETA 1" --predefine="NRF52_PAN_30 SETA 1" --predefine="NR
+F52_PAN_31 SETA 1" --predefine="NRF52_PAN_36 SETA 1" --predefine="NRF52_PAN_51 
+SETA 1" --predefine="NRF52_PAN_53 SETA 1" --predefine="NRF52_PAN_54 SETA 1" --p
+redefine="NRF52_PAN_55 SETA 1" --predefine="NRF52_PAN_58 SETA 1" --predefine="N
+RF52_PAN_62 SETA 1" --predefine="NRF52_PAN_63 SETA 1" --predefine="NRF52_PAN_64
+ SETA 1" --predefine="CONFIG_GPIO_AS_PINRESET SETA 1" --predefine="NRF52 SETA 1
+" --list=.\_build\arm_startup_nrf52.lst RTE\Device\nRF52832_xxAA\arm_startup_nr
+f52.s
 
 
 
