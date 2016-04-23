@@ -458,6 +458,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\components\drivers_nrf\nrf_soc_nosd\nrf_soc.c</FilePath>
             </File>
+            <File>
+              <FileName>hal_serial.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\drivers\src\hal_serial.c</FilePath>
+            </File>
+            <File>
+              <FileName>hal_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\drivers\src\hal_spi.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

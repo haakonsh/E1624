@@ -54,7 +54,7 @@
 #include "nordic_common.h"
 #include "nrf_drv_common.h"
 #include "nrf51_to_nrf52.h"
-#include "nrf_drv_spi.h"
+//#include "nrf_drv_spi.h"
 
 
 /******************************************************************************/
