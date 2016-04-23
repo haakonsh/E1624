@@ -73,9 +73,6 @@ char selectedRange = 0;
  * @return  NRF_SUCCESS - the initialization was successful and the device is present;
  *         INVALID_PARID - an error occurred.
 *******************************************************************************/
-//TODO Skriv utfyldende kommentarer.
-//TODO Gå igjennom kode. Let etter feil, eks. 'skrive/lese feil register' og evalueringer.
-
 uint32_t ADXL362_BUFFER_LENGTH = 0;
 
 void ADXL362_Init(void)
