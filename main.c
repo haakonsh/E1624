@@ -20,11 +20,9 @@
 * This file contains the source code for a sample application using PPI to communicate between timers.
 *
 */
-#include "SEGGER_RTT.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include "nrf_delay.h"
 #include "nrf_drv_lpcomp.h"
 #include "app_error.h"
 //#include "boards.h"
@@ -33,6 +31,7 @@
 #include "nordic_common.h"
 #include "nrf_drv_config.h"
 #include "app_util_platform.h"
+#include "SEGGER_RTT.h"
 
 volatile uint32_t Counter = 0;
 
