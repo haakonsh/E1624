@@ -365,7 +365,7 @@
               <MiscControls></MiscControls>
               <Define>BSP_DEFINES_ONLY BOARD_PCA10040 NRF52_PAN_12 NRF52_PAN_15 NRF52_PAN_20 NRF52_PAN_30 NRF52_PAN_31 NRF52_PAN_36 NRF52_PAN_51 NRF52_PAN_53 NRF52_PAN_54 NRF52_PAN_55 NRF52_PAN_58 NRF52_PAN_62 NRF52_PAN_63 NRF52_PAN_64 CONFIG_GPIO_AS_PINRESET NRF52</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\config\rtc_pca10040;..\..\config;..\..\..\..\..\components\drivers_nrf\clock;..\..\..\..\..\components\drivers_nrf\common;..\..\..\..\..\components\drivers_nrf\config;..\..\..\..\..\components\drivers_nrf\hal;..\..\..\..\..\components\drivers_nrf\nrf_soc_nosd;..\..\..\..\..\components\drivers_nrf\rtc;..\..\..\..\..\components\libraries\util;..\..\..\..\..\components\toolchain;..\..\..\..\bsp;..\..;..\..\..\..\..\..\application\src;..\..\..\..\..\..\application\inc;..\..\..\..\..\..\drivers\src;..\..\..\..\..\..\drivers\inc;..\..\..\..\..\components\drivers_nrf\gpiote;..\..\..\..\..\external\segger_rtt;..\..\..\..\..\components\drivers_nrf\ppi;..\..\..\..\..\components\drivers_nrf\lpcomp;..\..\..\..\..\components\drivers_nrf\timer;..\..\..\..\..\..\RTT</IncludePath>
+              <IncludePath>..\..\config\rtc_pca10040;..\..\config;..\..\..\..\..\components\drivers_nrf\clock;..\..\..\..\..\components\drivers_nrf\common;..\..\..\..\..\components\drivers_nrf\config;..\..\..\..\..\components\drivers_nrf\hal;..\..\..\..\..\components\drivers_nrf\nrf_soc_nosd;..\..\..\..\..\components\drivers_nrf\rtc;..\..\..\..\..\components\libraries\util;..\..\..\..\..\components\toolchain;..\..\..\..\bsp;..\..;..\..\..\..\..\..\application\src;..\..\..\..\..\..\application\inc;..\..\..\..\..\..\drivers\src;..\..\..\..\..\..\drivers\inc;..\..\..\..\..\components\drivers_nrf\gpiote;..\..\..\..\..\external\segger_rtt;..\..\..\..\..\components\drivers_nrf\ppi;..\..\..\..\..\components\drivers_nrf\lpcomp;..\..\..\..\..\components\drivers_nrf\timer;..\..\..\..\..\..\RTT;..\..\..\..\..\components\drivers_nrf\clock;..\..\..\..\..\components\drivers_nrf\rtc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -411,7 +411,7 @@
             <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\..\main.c</FilePath>
+              <FilePath>..\..\..\..\..\..\application\src\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -463,6 +463,31 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\components\drivers_nrf\ppi\nrf_drv_ppi.c</FilePath>
             </File>
+            <File>
+              <FileName>nrf_drv_clock.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\components\drivers_nrf\clock\nrf_drv_clock.c</FilePath>
+            </File>
+            <File>
+              <FileName>nrf_drv_gpiote.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\components\drivers_nrf\gpiote\nrf_drv_gpiote.c</FilePath>
+            </File>
+            <File>
+              <FileName>nrf_drv_rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\components\drivers_nrf\rtc\nrf_drv_rtc.c</FilePath>
+            </File>
+            <File>
+              <FileName>hal_serial.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\drivers\src\hal_serial.c</FilePath>
+            </File>
+            <File>
+              <FileName>hal_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\drivers\src\hal_spi.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -493,6 +518,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\components\libraries\util\nrf_log.c</FilePath>
             </File>
+            <File>
+              <FileName>sdk_mapped_flags.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\components\libraries\util\sdk_mapped_flags.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -507,6 +537,16 @@
               <FileName>SEGGER_RTT_printf.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\..\RTT\SEGGER_RTT_printf.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>ADXL362_driver</GroupName>
+          <Files>
+            <File>
+              <FileName>ADXL362_drv.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\drivers\src\ADXL362_drv.c</FilePath>
             </File>
           </Files>
         </Group>
