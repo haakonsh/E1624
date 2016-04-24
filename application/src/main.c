@@ -10,13 +10,17 @@
  *
  */
 
-/* This file is an application which purpose is to count steps and advertise it with the BLE radio.
- * It uses timer0 to track the number of times lpcomp triggers an event, using ppi.
- * It also utilizes an ADXL362 accellerometer to detect motion, and put the nRF52 to sleep in the abcense of * it.
- * The ADXL362 is programmed via a proprietary spi driver made by Hans Elfberg.
- * The ADXL362_drv was made by Analog Devices, ported to nRF52 and expanded with debugging tools.
- * Made by Håkon S.Holdhus and Lars J. Hammervold
- */
+/* ************************************************************************** *
+ * This file is an application which purpose is to count steps and advertise  *
+ * it with the BLE radio. It uses timer0 to track the number of times lpcomp  *
+ * triggers an event, using ppi. It also utilizes an ADXL362 accellerometer   *
+ * to detect motion, and put the nRF52 to sleep in the abcense of it. The     *
+ * ADXL362 is programmed via a proprietary spi driver made by Hans Elfberg.   *
+ * The ADXL362_drv was made by Analog Devices, ported to nRF52 and expanded   *
+ * with debugging tools.													  *
+ * Made by Håkon S.Holdhus and Lars J. Hammervold							  *
+ * ************************************************************************** */
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
