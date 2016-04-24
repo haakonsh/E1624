@@ -57,6 +57,7 @@ nrf_ppi_channel_t ppi_channel1;
 /********* Instantiations *********/
 const nrf_drv_timer_t timer0 	= NRF_DRV_TIMER_INSTANCE(0);
 const nrf_drv_rtc_t rtc 		= NRF_DRV_RTC_INSTANCE(0);
+/************************************************************************************************/
 
 /********* Configs *********/
 const nrf_drv_timer_config_t timer0_config = {
@@ -100,6 +101,7 @@ static const hal_spi_cfg_t hal_spi_cfg =
 
 /* ADXL362_INT_PIN configuration */
 nrf_drv_gpiote_in_config_t ADXL362_int_pin_cfg = GPIOTE_CONFIG_IN_SENSE_TOGGLE(false);
+/************************************************************************************************/
 
 /********* Event handlers *********/
 
@@ -132,6 +134,7 @@ void lpcomp_event_handler(nrf_lpcomp_event_t event){
 	SEGGER_RTT_printf(0,"Counter = %u\n", Counter);
 }
 lpcomp_events_handler_t p_lpcomp_event_handler = lpcomp_event_handler;
+/************************************************************************************************/
 
 /********* Intitializations *********/
 static void ppi_init(void)
@@ -183,6 +186,22 @@ void ADXL362_init(void)
 	nrf_drv_rtc_uninit(&rtc);
 }
 
+void gpiote_init(void)
+{
+	/* Init GPIOTE module */
+	if(!nrf_drv_gpiote_is_init())
+	{
+		APP_ERROR_CHECK(nrf_drv_gpiote_init());
+	}
+	/* Init GPIOTE pin */
+	APP_ERROR_CHECK(nrf_drv_gpiote_in_init(ADXL362_INT_PIN,
+	                             &ADXL362_int_pin_cfg,
+	                             ADXL362_int_pin_event_handler));
+	/* Eneable toggle event and interrupt on pin */
+	nrf_drv_gpiote_in_event_enable(ADXL362_INT_PIN, true);
+}
+/************************************************************************************************/
+
 /********* Utility functions *********/
 
 void rtc_delay(uint32_t time_delay){
@@ -207,10 +226,53 @@ void rtc_delay(uint32_t time_delay){
 	nrf_drv_rtc_disable(&rtc);
 }
 
+void ADXL362_motiondetect_cfg(void)
+{
+	/*! Find ADXL362 on SPI bus*/
+	ADXL362_Init();
+
+	/*! Reset all registers*/
+	ADXL362_SoftwareReset();
+
+	/*! Configure activity detection. */
+	ADXL362_SetupActivityDetection(ADXL362_ACT_RefAbs,
+	                                  ADXL362_ACT_THRESH,
+	                                  ADXL362_ACT_TIME);
+
+	/*! Configure inactivity detection. */
+	ADXL362_SetupInactivityDetection(ADXL362_INACT_RefAbs,
+	                                   ADXL362_INACT_THRESH,
+	                                   ADXL362_INACT_TIME);
+
+	/*! Configure activity/inactivity link mode*/
+	ADXL362_SetupActivityInactivityLinkLoop(ADXL362_ACT_INACT_CTL_LINKLOOP(ADXL362_MODE_LOOP));
+
+	/*! Configure the INTMAP1. */
+	//ADXL362_SetupINTMAP1(ADXL362_INTMAP1_INT_LOW | ADXL362_INTMAP1_AWAKE);
+	ADXL362_SetupINTMAP1(ADXL362_INTMAP1_AWAKE);
+
+	/*! Configure the INTMAP2. */
+	ADXL362_SetupINTMAP2(ADXL362_INTMAP2_AWAKE);
+
+	/*! Configure the measurement range. */
+	ADXL362_SetRange(ADXL362_RANGE_2G);
+
+	/*! Configure the Output Data Rate of the device. */
+	ADXL362_SetOutputRate(ADXL362_ODR);
+
+	/* Configure Power Control, starts measurements */
+	ADXL362_SetPowerMode(ADXL362_POWER_CTL_WAKEUP);
+	ADXL362_SetPowerMode(ADXL362_POWER_CTL_AUTOSLEEP);
+	ADXL362_SetPowerMode(ADXL362_POWER_CTL_MEASURE(ADXL362_MEASURE_ON));
+}
+
+/************************************************************************************************/
+
 int main(void)
 {
+	uint32_t scb_scr;
 
-	ppi_init();    // PPI to redirect the event to timer start/stop tasks.
+	ppi_init();
 
 	APP_ERROR_CHECK(nrf_drv_timer_init(&timer0, &timer0_config, timer_event_handler));
 
@@ -218,83 +280,31 @@ int main(void)
 	NRF_LPCOMP->HYST = COMP_HYST_HYST_Hyst50mV;
 	nrf_drv_lpcomp_enable();
 
-	SEGGER_RTT_WriteString(0,"Hello Lars!\n");
+	/* Set interrupt pin pull */
+	ADXL362_int_pin_cfg.pull = NRF_GPIO_PIN_PULLDOWN;   //Interrupt is active high
 
-	{
-		uint32_t scb_scr;
+	/* Initialize SS pin */
+	NRF_GPIO->OUTSET = (1 << SS_PIN);
+	NRF_GPIO->DIRSET = (1 << SS_PIN);
 
-   	 ADXL362_init();
+	/* ADXL362 startup sequence */
+	ADXL362_init();
 
-   	 /* Initialize SS pin */
-        NRF_GPIO->OUTSET = (1 << SS_PIN);
-        NRF_GPIO->DIRSET = (1 << SS_PIN);
+	hal_serial_init(&serial_cfg);
+	hal_spi_init();
 
-       hal_serial_init(&serial_cfg);
-       hal_spi_init();
+	(void)hal_spi_open(HAL_SPI_ID_SPI0, &hal_spi_cfg);
+	ADXL362_motiondetect_cfg();
+	(void)hal_spi_close(HAL_SPI_ID_SPI0);
 
-       (void)hal_spi_open(HAL_SPI_ID_SPI0, &hal_spi_cfg);
+	/* Allow interrupts to fire in equal interrupt priority ISR's */
+	scb_scr = SCB->SCR;
+	SCB->SCR = scb_scr | SCB_SCR_SEVONPEND_Msk;
 
-   	/*! Find ADXL362 on SPI bus*/
-       ADXL362_Init();
+	/* Prevent interrupts to fire in equal interrupt priority ISR's */
+	//SCB->SCR &= ~SCB_SCR_SEVONPEND_Msk;
 
-   	/*! Reset all registers*/
-       ADXL362_SoftwareReset();
-
-       /*! Configure activity detection. */
-       ADXL362_SetupActivityDetection(ADXL362_ACT_RefAbs,
-                                          ADXL362_ACT_THRESH,
-                                          ADXL362_ACT_TIME);
-
-   	/*! Configure inactivity detection. */
-       ADXL362_SetupInactivityDetection(ADXL362_INACT_RefAbs,
-                                           ADXL362_INACT_THRESH,
-                                           ADXL362_INACT_TIME);
-
-   	/*! Configure activity/inactivity link mode*/
-       ADXL362_SetupActivityInactivityLinkLoop(ADXL362_ACT_INACT_CTL_LINKLOOP(ADXL362_MODE_LOOP));
-
-   	/*! Configure the INTMAP1. */
-       //ADXL362_SetupINTMAP1(ADXL362_INTMAP1_INT_LOW | ADXL362_INTMAP1_AWAKE);
-   	ADXL362_SetupINTMAP1(ADXL362_INTMAP1_AWAKE);
-
-       /*! Configure the INTMAP2. */
-       ADXL362_SetupINTMAP2(ADXL362_INTMAP2_AWAKE);
-
-   	/*! Configure the measurement range. */
-       ADXL362_SetRange(ADXL362_RANGE_2G);
-
-   	/*! Configure the Output Data Rate of the device. */
-       ADXL362_SetOutputRate(ADXL362_ODR);
-
-   	/* Configure Power Control, starts measurements */
-   	ADXL362_SetPowerMode(ADXL362_POWER_CTL_WAKEUP);
-       ADXL362_SetPowerMode(ADXL362_POWER_CTL_AUTOSLEEP);
-       ADXL362_SetPowerMode(ADXL362_POWER_CTL_MEASURE(ADXL362_MEASURE_ON));
-
-       (void)hal_spi_close(HAL_SPI_ID_SPI0);
-
-   	/* Set pin pull */
-       ADXL362_int_pin_cfg.pull = NRF_GPIO_PIN_PULLDOWN;   //Interrupt is active high
-
-       /* Allow interrupts to fire in equal interrupt priority ISR's */
-       scb_scr = SCB->SCR;
-       SCB->SCR = scb_scr | SCB_SCR_SEVONPEND_Msk;
-
-       /* Prevent interrupts to fire in equal interrupt priority ISR's */
-       //SCB->SCR &= ~SCB_SCR_SEVONPEND_Msk;
-
-       /* Init GPIOTE module */
-       if(!nrf_drv_gpiote_is_init())
-       {
-           APP_ERROR_CHECK(nrf_drv_gpiote_init());
-       }
-       /* Init GPIOTE pin */
-       APP_ERROR_CHECK(nrf_drv_gpiote_in_init(ADXL362_INT_PIN,
-                                         &ADXL362_int_pin_cfg,
-                                         ADXL362_int_pin_event_handler));
-       /* Eneable toggle event and interrupt on pin */
-       nrf_drv_gpiote_in_event_enable(ADXL362_INT_PIN, true);
-	}
+	gpiote_init();
 
     while (true)
     {
