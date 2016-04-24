@@ -20,7 +20,7 @@
 /********************************** Pin map **********************************/
 #define SCK_PIN				  	11
 #define MOSI_PIN			  	12
-#define MISO_PIN			  	5
+#define MISO_PIN			  	6
 #define SS_PIN				  	15
 #define VDD_PIN					14
 #define ADXL362_INT_PIN 		17

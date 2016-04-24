@@ -17,7 +17,8 @@
  * to detect motion, and put the nRF52 to sleep in the abcense of it. The     *
  * ADXL362 is programmed via a proprietary spi driver made by Hans Elfberg.   *
  * The ADXL362_drv was made by Analog Devices, ported to nRF52 and expanded   *
- * with debugging tools.													  *
+ * with debugging tools. BLE advertisement is done via a proprietary radio	  *
+ * driver also made by Hans Elfberg.										  *
  * Made by Håkon S.Holdhus and Lars J. Hammervold							  *
  * ************************************************************************** */
 
@@ -106,7 +107,6 @@ nrf_drv_gpiote_in_config_t ADXL362_int_pin_cfg = GPIOTE_CONFIG_IN_SENSE_TOGGLE(f
 /************************************************************************************************/
 
 /**************************************** Event handlers ****************************************/
-
 void ADXL362_int_pin_event_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
 {
     // If PIN is high
@@ -205,7 +205,6 @@ void gpiote_init(void)
 /************************************************************************************************/
 
 /************************************** Utility functions ***************************************/
-
 void rtc_delay(uint32_t time_delay){
     ret_code_t err_code;
     timer_evt_called = false;
