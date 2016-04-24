@@ -10,16 +10,13 @@
  *
  */
 
-/** @file
-*
-* @defgroup ppi_example_main main.c
-* @{
-* @ingroup ppi_example
-* @brief PPI Example Application main file.
-*
-* This file contains the source code for a sample application using PPI to communicate between timers.
-*
-*/
+/* This file is an application which purpose is to count steps and advertise it with the BLE radio.
+ * It uses timer0 to track the number of times lpcomp triggers an event, using ppi.
+ * It also utilizes an ADXL362 accellerometer to detect motion, and put the nRF52 to sleep in the abcense of * it.
+ * The ADXL362 is programmed via a proprietary spi driver made by Hans Elfberg.
+ * The ADXL362_drv was made by Analog Devices, ported to nRF52 and expanded with debugging tools.
+ * Made by Håkon S.Holdhus and Lars J. Hammervold
+ */
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -49,17 +46,18 @@
 uint8_t ADXL362_TX_BUFFER[8];
 uint8_t ADXL362_RX_BUFFER[8];
 
+/* Step counter variable */
 volatile uint32_t Counter = 0;
 /* Check value to block application program execution */
 bool volatile timer_evt_called = false;
 nrf_ppi_channel_t ppi_channel1;
 
-/********* Instantiations *********/
+/*************************************** Instantiations *****************************************/
 const nrf_drv_timer_t timer0 	= NRF_DRV_TIMER_INSTANCE(0);
 const nrf_drv_rtc_t rtc 		= NRF_DRV_RTC_INSTANCE(0);
 /************************************************************************************************/
 
-/********* Configs *********/
+/****************************************** Configs *********************************************/
 const nrf_drv_timer_config_t timer0_config = {
 	.frequency			= NRF_TIMER_FREQ_31250Hz,
 	.mode				= NRF_TIMER_MODE_LOW_POWER_COUNTER,
@@ -103,7 +101,7 @@ static const hal_spi_cfg_t hal_spi_cfg =
 nrf_drv_gpiote_in_config_t ADXL362_int_pin_cfg = GPIOTE_CONFIG_IN_SENSE_TOGGLE(false);
 /************************************************************************************************/
 
-/********* Event handlers *********/
+/**************************************** Event handlers ****************************************/
 
 void ADXL362_int_pin_event_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
 {
@@ -136,7 +134,7 @@ void lpcomp_event_handler(nrf_lpcomp_event_t event){
 lpcomp_events_handler_t p_lpcomp_event_handler = lpcomp_event_handler;
 /************************************************************************************************/
 
-/********* Intitializations *********/
+/*************************************** Intitializations ***************************************/
 static void ppi_init(void)
 {
 	/* Initialize ppi */
@@ -202,7 +200,7 @@ void gpiote_init(void)
 }
 /************************************************************************************************/
 
-/********* Utility functions *********/
+/************************************** Utility functions ***************************************/
 
 void rtc_delay(uint32_t time_delay){
     ret_code_t err_code;
@@ -265,7 +263,6 @@ void ADXL362_motiondetect_cfg(void)
 	ADXL362_SetPowerMode(ADXL362_POWER_CTL_AUTOSLEEP);
 	ADXL362_SetPowerMode(ADXL362_POWER_CTL_MEASURE(ADXL362_MEASURE_ON));
 }
-
 /************************************************************************************************/
 
 int main(void)
@@ -313,6 +310,3 @@ int main(void)
 		__WFE();
     }
 }
-
-
-/** @} */
