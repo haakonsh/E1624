@@ -135,13 +135,13 @@ void ADXL362_int_pin_event_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity
     // If PIN is high
     if(nrf_gpio_pin_read(ADXL362_INT_PIN))
     {
+		NRF_RTC0->TASKS_STOP;
         __WFE();
         __SEV();
         __WFE();
+		NRF_RTC0->TASKS_START;
     }
 }
-
-void timer_event_handler(nrf_timer_event_t event_type, void * p_context){}
 
 static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
 {
@@ -151,13 +151,9 @@ static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
     }
 }
 
-void lpcomp_event_handler(nrf_lpcomp_event_t event){
+void timer_event_handler(nrf_timer_event_t event_type, void * p_context){}
 
-	nrf_timer_task_trigger(NRF_TIMER0, NRF_TIMER_TASK_CAPTURE0);
-
-	Counter = nrf_drv_timer_capture_get(&timer0, NRF_TIMER_CC_CHANNEL0);
-	SEGGER_RTT_printf(0,"Counter = %u\n", Counter);
-}
+void lpcomp_event_handler(nrf_lpcomp_event_t event){};
 lpcomp_events_handler_t p_lpcomp_event_handler = lpcomp_event_handler;
 /************************************************************************************************/
 
@@ -388,6 +384,11 @@ static void beacon_handler(void)
         timer_evt_called = false;
         time_us = LFCLK_STARTUP_TIME_US;
         rtc_delay_ms(time_us);
+
+		/* Read temperature */
+		nrf_timer_task_trigger(NRF_TIMER0, NRF_TIMER_TASK_CAPTURE0);
+		Counter = nrf_drv_timer_capture_get(&timer0, NRF_TIMER_CC_CHANNEL0);
+
         while ( !timer_evt_called )
         {
             __WFE();
