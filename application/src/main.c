@@ -51,7 +51,7 @@
 #include "hal_timer.h"
 #include "hal_clock.h"
 #include "hal_power.h"
-
+// tony 
 /************************************ Buffer declarations ***************************************/
 uint8_t ADXL362_TX_BUFFER[8];
 uint8_t ADXL362_RX_BUFFER[8];
