@@ -365,7 +365,7 @@
               <MiscControls></MiscControls>
               <Define>BSP_DEFINES_ONLY BOARD_PCA10040 NRF52_PAN_12 NRF52_PAN_15 NRF52_PAN_20 NRF52_PAN_30 NRF52_PAN_31 NRF52_PAN_36 NRF52_PAN_51 NRF52_PAN_53 NRF52_PAN_54 NRF52_PAN_55 NRF52_PAN_58 NRF52_PAN_62 NRF52_PAN_63 NRF52_PAN_64 CONFIG_GPIO_AS_PINRESET NRF52</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\config\rtc_pca10040;..\..\config;..\..\..\..\..\components\drivers_nrf\clock;..\..\..\..\..\components\drivers_nrf\common;..\..\..\..\..\components\drivers_nrf\config;..\..\..\..\..\components\drivers_nrf\hal;..\..\..\..\..\components\drivers_nrf\nrf_soc_nosd;..\..\..\..\..\components\drivers_nrf\rtc;..\..\..\..\..\components\libraries\util;..\..\..\..\..\components\toolchain;..\..\..\..\bsp;..\..;..\..\..\..\..\..\application\src;..\..\..\..\..\..\application\inc;..\..\..\..\..\..\drivers\src;..\..\..\..\..\..\drivers\inc;..\..\..\..\..\components\drivers_nrf\gpiote;..\..\..\..\..\external\segger_rtt;..\..\..\..\..\components\drivers_nrf\ppi;..\..\..\..\..\components\drivers_nrf\lpcomp;..\..\..\..\..\components\drivers_nrf\timer;..\..\..\..\..\..\RTT;..\..\..\..\..\components\drivers_nrf\clock;..\..\..\..\..\components\drivers_nrf\rtc</IncludePath>
+              <IncludePath>..\..\config\rtc_pca10040;..\..\config;..\..\..\..\..\components\drivers_nrf\clock;..\..\..\..\..\components\drivers_nrf\common;..\..\..\..\..\components\drivers_nrf\config;..\..\..\..\..\components\drivers_nrf\hal;..\..\..\..\..\components\drivers_nrf\nrf_soc_nosd;..\..\..\..\..\components\drivers_nrf\rtc;..\..\..\..\..\components\libraries\util;..\..\..\..\..\components\toolchain;..\..\..\..\bsp;..\..;..\..\..\..\..\..\application\src;..\..\..\..\..\..\application\inc;..\..\..\..\..\..\drivers\src;..\..\..\..\..\..\drivers\inc;..\..\..\..\..\components\drivers_nrf\gpiote;..\..\..\..\..\external\segger_rtt;..\..\..\..\..\components\drivers_nrf\ppi;..\..\..\..\..\components\drivers_nrf\lpcomp;..\..\..\..\..\components\drivers_nrf\timer;..\..\..\..\..\..\RTT;..\..\..\..\..\components\drivers_nrf\clock;..\..\..\..\..\components\drivers_nrf\rtc;..\..\..\..\..\..\libraries\inc;..\..\..\..\..\..\libraries\src</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -547,6 +547,26 @@
               <FileName>ADXL362_drv.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\..\drivers\src\ADXL362_drv.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Libraries</GroupName>
+          <Files>
+            <File>
+              <FileName>hal_clock.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\libraries\src\hal_clock.c</FilePath>
+            </File>
+            <File>
+              <FileName>hal_radio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\libraries\src\hal_radio.c</FilePath>
+            </File>
+            <File>
+              <FileName>hal_timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\libraries\src\hal_timer.c</FilePath>
             </File>
           </Files>
         </Group>

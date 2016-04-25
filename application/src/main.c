@@ -283,12 +283,12 @@ int main(void)
 	/* Set interrupt pin pull */
 	ADXL362_int_pin_cfg.pull = NRF_GPIO_PIN_PULLDOWN;   //Interrupt is active high
 
+	/* ADXL362 startup sequence */
+	ADXL362_init();
+
 	/* Initialize SS pin */
 	NRF_GPIO->OUTSET = (1 << SS_PIN);
 	NRF_GPIO->DIRSET = (1 << SS_PIN);
-
-	/* ADXL362 startup sequence */
-	ADXL362_init();
 
 	hal_serial_init(&serial_cfg);
 	hal_spi_init();
