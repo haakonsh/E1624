@@ -42,6 +42,16 @@
 #define ADXL362_ODR           	ADXL362_ODR_12_5_HZ  // Output data rate
 /******************************************************************************/
 
+/*********************************** Radio ************************************/
+#define INITIAL_TIMEOUT         (2000)
+#define LFCLK_STARTUP_TIME_US   (1600)
+
+#if INITIAL_TIMEOUT - LFCLK_STARTUP_TIME_US < 400
+#error "Initial timeout too short!"
+#endif
+
+#define BD_ADDR_OFFS              3
+/*******************************************************************************/
 extern uint8_t ADXL362_TX_BUFFER[8];
 extern uint8_t ADXL362_RX_BUFFER[8];
 extern uint32_t ADXL362_BUFFER_LENGTH;

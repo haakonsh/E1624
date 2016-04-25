@@ -47,15 +47,32 @@
 #include "ADXL362_drv.h"
 #include "nrf_drv_rtc.h"
 #include "nrf_drv_clock.h"
+#include "hal_radio.h"
+#include "hal_timer.h"
+#include "hal_clock.h"
+#include "hal_power.h"
 
+/************************************ Buffer declarations ***************************************/
 uint8_t ADXL362_TX_BUFFER[8];
 uint8_t ADXL362_RX_BUFFER[8];
+static uint8_t adv_pdu[36 + 3] =
+{
+    0x42, 0x24, 0x00,
+    0xE2, 0xA3, 0x01, 0xE7, 0x61, 0xF7, 0x02, 0x01, 0x04, 0x1A, 0xFF, 0x59, 0x00, 0x02, 0x15, 0x01, 0x12, 0x23,
+    0x34, 0x45, 0x56, 0x67, 0x78, 0x89, 0x9A, 0xAB, 0xBC, 0xCD, 0xDE, 0xEF, 0xF0, 0x01, 0x02, 0x03, 0x04, 0xC3
+};
+/************************************************************************************************/
 
-/* Step counter variable */
+/*********************************** variable declarations **************************************/
 volatile uint32_t Counter = 0;
-/* Check value to block application program execution */
 bool volatile timer_evt_called = false;
 nrf_ppi_channel_t ppi_channel1;
+
+bool volatile radio_isr_called;
+bool volatile rtc_isr_called;
+uint32_t time_us;
+uint32_t interval_us = 1000000;
+/************************************************************************************************/
 
 /*************************************** Instantiations *****************************************/
 const nrf_drv_timer_t timer0 	= NRF_DRV_TIMER_INSTANCE(0);
@@ -106,7 +123,22 @@ static const hal_spi_cfg_t hal_spi_cfg =
 nrf_drv_gpiote_in_config_t ADXL362_int_pin_cfg = GPIOTE_CONFIG_IN_SENSE_TOGGLE(false);
 /************************************************************************************************/
 
-/**************************************** Event handlers ****************************************/
+/**************************************** Event/ISR handlers ****************************************/
+void RADIO_IRQHandler(void)
+{
+    NRF_RADIO->EVENTS_DISABLED = 0;
+    radio_isr_called = true;
+}
+
+void RTC0_IRQHandler(void)
+{
+    NRF_RTC0->EVTENCLR = (RTC_EVTENCLR_COMPARE0_Enabled << RTC_EVTENCLR_COMPARE0_Pos);
+    NRF_RTC0->INTENCLR = (RTC_INTENCLR_COMPARE0_Enabled << RTC_INTENCLR_COMPARE0_Pos);
+    NRF_RTC0->EVENTS_COMPARE[0] = 0;
+
+    rtc_isr_called = true;
+}
+
 void ADXL362_int_pin_event_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
 {
     // If PIN is high
@@ -282,6 +314,81 @@ void ADXL362_motiondetect_cfg(void)
 	ADXL362_SetPowerMode(ADXL362_POWER_CTL_AUTOSLEEP);
 	ADXL362_SetPowerMode(ADXL362_POWER_CTL_MEASURE(ADXL362_MEASURE_ON));
 }
+
+static void send_one_packet(uint8_t channel_index)
+{
+    uint8_t i;
+
+    radio_isr_called = false;
+    hal_radio_channel_index_set(channel_index);
+    hal_radio_send(adv_pdu);
+    while ( !radio_isr_called )
+    {
+        __WFE();
+        __SEV();
+        __WFE();
+    }
+
+    for ( i = 0; i < 9; i++ )
+    {
+        __NOP();
+    }
+}
+
+static void uicr_bd_addr_set(void)
+{
+    if ( ( NRF_FICR->DEVICEADDR[0]           != 0xFFFFFFFF)
+    ||   ((NRF_FICR->DEVICEADDR[1] & 0xFFFF) != 0xFFFF) )
+    {
+        adv_pdu[BD_ADDR_OFFS    ] = (NRF_FICR->DEVICEADDR[0]      ) & 0xFF;
+        adv_pdu[BD_ADDR_OFFS + 1] = (NRF_FICR->DEVICEADDR[0] >>  8) & 0xFF;
+        adv_pdu[BD_ADDR_OFFS + 2] = (NRF_FICR->DEVICEADDR[0] >> 16) & 0xFF;
+        adv_pdu[BD_ADDR_OFFS + 3] = (NRF_FICR->DEVICEADDR[0] >> 24)       ;
+        adv_pdu[BD_ADDR_OFFS + 4] = (NRF_FICR->DEVICEADDR[1]      ) & 0xFF;
+        adv_pdu[BD_ADDR_OFFS + 5] = (NRF_FICR->DEVICEADDR[1] >>  8) & 0xFF;
+    }
+}
+
+static void beacon_handler(void)
+{
+    hal_radio_reset();
+    hal_timer_start();
+
+    uicr_bd_addr_set();
+
+    time_us = INITIAL_TIMEOUT - LFCLK_STARTUP_TIME_US;
+
+    do
+    {
+        rtc_isr_called = false;
+        hal_timer_timeout_set(time_us);
+        while ( !rtc_isr_called )
+        {
+            __WFE();
+            __SEV();
+            __WFE();
+        }
+
+        hal_clock_hfclk_enable();
+
+        rtc_isr_called = false;
+        time_us += LFCLK_STARTUP_TIME_US;
+        hal_timer_timeout_set(time_us);
+        while ( !rtc_isr_called )
+        {
+            __WFE();
+            __SEV();
+            __WFE();
+        }
+        send_one_packet(37);
+        send_one_packet(38);
+        send_one_packet(39);
+
+        hal_clock_hfclk_disable();
+
+        time_us = time_us + (interval_us - LFCLK_STARTUP_TIME_US);
+    } while ( 1 );
+}
 /************************************************************************************************/
 
 int main(void)
@@ -324,8 +431,6 @@ int main(void)
 
     while (true)
     {
-		__WFE();
-		__SEV();
-		__WFE();
+		beacon_handler();
     }
 }

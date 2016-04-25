@@ -65,4 +65,7 @@ nRF5_SDK_11.0.0_89a8197/examples/peripheral/rtc/pca10040/arm5_no_packs/JLinkSett
 # Segger RTT #
 RTT*
 
+# commit_msg #
+commit_msg.txt
+
 #############################
