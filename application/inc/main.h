@@ -50,7 +50,9 @@
 #error "Initial timeout too short!"
 #endif
 
-#define BD_ADDR_OFFS              3
+#define BD_ADDR_OFFS			3
+#define TEMP_OFFS				10
+#define STEPS_OFFS				14
 /*******************************************************************************/
 extern uint8_t ADXL362_TX_BUFFER[8];
 extern uint8_t ADXL362_RX_BUFFER[8];

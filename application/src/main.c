@@ -378,6 +378,9 @@ static void beacon_handler(void)
             __SEV();
             __WFE();
         }
+		/* Read #steps and put it into tx buffer */
+		nrf_timer_task_trigger(NRF_TIMER0, NRF_TIMER_TASK_CAPTURE0);
+		adv_pdu[STEPS_OFFS] = nrf_drv_timer_capture_get(&timer0, NRF_TIMER_CC_CHANNEL0);
 
         hal_clock_hfclk_enable();
 
@@ -385,10 +388,8 @@ static void beacon_handler(void)
         time_us = LFCLK_STARTUP_TIME_US;
         rtc_delay_ms(time_us);
 
-		/* Read temperature */
-		nrf_timer_task_trigger(NRF_TIMER0, NRF_TIMER_TASK_CAPTURE0);
-		Counter = nrf_drv_timer_capture_get(&timer0, NRF_TIMER_CC_CHANNEL0);
-
+		/* Read temperature and put it into tx buffer */
+		adv_pdu[STEPS_OFFS] = temperature_measurement;
         while ( !timer_evt_called )
         {
             __WFE();
