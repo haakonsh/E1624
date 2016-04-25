@@ -32,7 +32,7 @@ void hal_timer_timeout_set(uint32_t timeout_us)
 {
     uint32_t rtc_units;
     uint32_t us_units;
-    
+
     m_convert(timeout_us, &rtc_units, &us_units);
     (void)us_units;
 

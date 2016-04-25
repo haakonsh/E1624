@@ -51,7 +51,7 @@
 #include "hal_timer.h"
 #include "hal_clock.h"
 #include "hal_power.h"
-// tony 
+
 /************************************ Buffer declarations ***************************************/
 uint8_t ADXL362_TX_BUFFER[8];
 uint8_t ADXL362_RX_BUFFER[8];
@@ -238,11 +238,34 @@ void gpiote_init(void)
 
 /************************************** Utility functions ***************************************/
 void rtc_delay(uint32_t time_delay){
-    ret_code_t err_code;
     timer_evt_called = false;
     /* Set compare channel to trigger interrupt after COMPARE_COUNTERTIME seconds */
-    err_code = nrf_drv_rtc_cc_set(&rtc,0,time_delay,true);
-    APP_ERROR_CHECK(err_code);
+    APP_ERROR_CHECK(nrf_drv_rtc_cc_set(&rtc,0,time_delay,true));
+    /* Reset the COUNTER register */
+    nrf_drv_rtc_counter_clear(&rtc);
+    /* Power on RTC instance */
+    nrf_drv_rtc_enable(&rtc);
+    /* Check to block application program execution */
+    do
+    {
+		__WFE();
+		__SEV();
+        __WFE();
+    }
+	while(!timer_evt_called);
+    /* Stop the RTC */
+	nrf_drv_rtc_disable(&rtc);
+}
+void rtc_delay_ms(uint32_t timeout_us){
+    timer_evt_called = false;
+	uint32_t rtc_units;
+    uint32_t us_units;
+
+    m_convert(timeout_us, &rtc_units, &us_units);
+    (void)us_units;
+
+    /* Set compare channel to trigger interrupt after COMPARE_COUNTERTIME seconds */
+    APP_ERROR_CHECK(nrf_drv_rtc_cc_set(&rtc,0,rtc_units,true));
     /* Reset the COUNTER register */
     nrf_drv_rtc_counter_clear(&rtc);
     /* Power on RTC instance */
