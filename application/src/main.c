@@ -269,8 +269,9 @@ void rtc_delay_ms(uint32_t timeout_us){
 	nrf_drv_rtc_disable(&rtc);
 }
 
-int32_t temperature_measurement(void)
+void temperature_measurement(void)
 {
+	uint32_t temp;
 	NRF_TEMP->INTENSET = 1;
 	NRF_TEMP->TASKS_START = 1;
 	while(!NRF_TEMP->EVENTS_DATARDY)
@@ -282,7 +283,12 @@ int32_t temperature_measurement(void)
 	NRF_TEMP->EVENTS_DATARDY = 0;
 	NRF_TEMP->TASKS_STOP = 1;
 	NRF_TEMP->INTENCLR = 1;
-	return NRF_TEMP->TEMP;
+
+	temp = NRF_TEMP->TEMP;
+	adv_pdu[TEMP_OFFS + 0] = temp;
+	adv_pdu[TEMP_OFFS + 1] = (temp >> 8);
+	adv_pdu[TEMP_OFFS + 2] = (temp >> 16);
+	adv_pdu[TEMP_OFFS + 3] = (temp >> 24);
 }
 
 void ADXL362_motiondetect_cfg(void)
@@ -389,7 +395,7 @@ static void beacon_handler(void)
         rtc_delay_ms(time_us);
 
 		/* Read temperature and put it into tx buffer */
-		adv_pdu[STEPS_OFFS] = temperature_measurement;
+		temperature_measurement();
         while ( !timer_evt_called )
         {
             __WFE();
