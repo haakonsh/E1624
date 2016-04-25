@@ -2,7 +2,7 @@
 #include "hal_clock.h"
 #include "nrf.h"
 
-static void m_convert(uint32_t time_us, uint32_t *rtc_units, uint32_t *us_units)
+void m_convert(uint32_t time_us, uint32_t *rtc_units, uint32_t *us_units)
 {
    uint32_t u1, u2, t1, t2, t3;
 

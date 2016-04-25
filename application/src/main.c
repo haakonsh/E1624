@@ -130,15 +130,6 @@ void RADIO_IRQHandler(void)
     radio_isr_called = true;
 }
 
-void RTC0_IRQHandler(void)
-{
-    NRF_RTC0->EVTENCLR = (RTC_EVTENCLR_COMPARE0_Enabled << RTC_EVTENCLR_COMPARE0_Pos);
-    NRF_RTC0->INTENCLR = (RTC_INTENCLR_COMPARE0_Enabled << RTC_INTENCLR_COMPARE0_Pos);
-    NRF_RTC0->EVENTS_COMPARE[0] = 0;
-
-    rtc_isr_called = true;
-}
-
 void ADXL362_int_pin_event_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
 {
     // If PIN is high
@@ -383,9 +374,9 @@ static void beacon_handler(void)
 
     do
     {
-        rtc_isr_called = false;
-        hal_timer_timeout_set(time_us);
-        while ( !rtc_isr_called )
+        timer_evt_called = false;
+        rtc_delay_ms(time_us);
+        while ( !timer_evt_called )
         {
             __WFE();
             __SEV();
@@ -394,10 +385,10 @@ static void beacon_handler(void)
 
         hal_clock_hfclk_enable();
 
-        rtc_isr_called = false;
-        time_us += LFCLK_STARTUP_TIME_US;
-        hal_timer_timeout_set(time_us);
-        while ( !rtc_isr_called )
+        timer_evt_called = false;
+        time_us = LFCLK_STARTUP_TIME_US;
+        rtc_delay_ms(time_us);
+        while ( !timer_evt_called )
         {
             __WFE();
             __SEV();
@@ -409,7 +400,7 @@ static void beacon_handler(void)
 
         hal_clock_hfclk_disable();
 
-        time_us = time_us + (interval_us - LFCLK_STARTUP_TIME_US);
+        time_us = interval_us - LFCLK_STARTUP_TIME_US;
     } while ( 1 );
 }
 /************************************************************************************************/

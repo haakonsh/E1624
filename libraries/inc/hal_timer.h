@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+void m_convert(uint32_t time_us, uint32_t *rtc_units, uint32_t *us_units);
 
 void hal_timer_start(void);
 
