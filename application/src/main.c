@@ -227,6 +227,22 @@ void rtc_delay(uint32_t time_delay){
 	nrf_drv_rtc_disable(&rtc);
 }
 
+int32_t temperature_measurement(void)
+{
+	NRF_TEMP->INTENSET = 1;
+	NRF_TEMP->TASKS_START = 1;
+	while(!NRF_TEMP->EVENTS_DATARDY)
+	{
+		__WFE();
+		__SEV();
+		__WFE();
+	}
+	NRF_TEMP->EVENTS_DATARDY = 0;
+	NRF_TEMP->TASKS_STOP = 1;
+	NRF_TEMP->INTENCLR = 1;
+	return NRF_TEMP->TEMP;
+}
+
 void ADXL362_motiondetect_cfg(void)
 {
 	/*! Find ADXL362 on SPI bus*/
