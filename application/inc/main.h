@@ -39,6 +39,9 @@
 /******************************************************************************/
 
 /*********************************** Radio ************************************/
+#define BD_ADDR_OFFS			3
+#define TEMP_OFFS				15
+#define STEPS_OFFS				19
 #define INITIAL_TIMEOUT         (2000)
 #define LFCLK_STARTUP_TIME_US   (1600)
 
@@ -46,9 +49,6 @@
 #error "Initial timeout too short!"
 #endif
 
-#define BD_ADDR_OFFS			3
-#define TEMP_OFFS				10
-#define STEPS_OFFS				14
 /*******************************************************************************/
 
 /******************************** Variables ************************************/
