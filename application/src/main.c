@@ -388,6 +388,8 @@ static void beacon_handler(void)
     {
         timer_evt_called = false;
         rtc_delay_ms(time_us);
+        /* Disable gpiote from executing ADXL362_int_pin_event_handler(); */
+        nrf_drv_gpiote_in_event_disable(ADXL362_INT_PIN);
         while ( !timer_evt_called )
         {
             __WFE();
@@ -418,6 +420,8 @@ static void beacon_handler(void)
         hal_clock_hfclk_disable();
 
         time_us = interval_us - LFCLK_STARTUP_TIME_US;
+        /* Enable gpiote from executing ADXL362_int_pin_event_handler(); */
+        nrf_drv_gpiote_in_event_enable(ADXL362_INT_PIN, true);
     } while ( 1 );
 }
 /************************************************************************************************/
