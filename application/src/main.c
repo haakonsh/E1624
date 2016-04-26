@@ -426,7 +426,7 @@ int main(void)
 	nrf_drv_lpcomp_enable();
 
 	/* Set interrupt pin pull */
-	ADXL362_int_pin_cfg.pull = NRF_GPIO_PIN_PULLDOWN;   //Interrupt is active high
+	//ADXL362_int_pin_cfg.pull = NRF_GPIO_PIN_PULLDOWN;   //Interrupt is active high
 
 	/* ADXL362 startup sequence */
 	ADXL362_init();

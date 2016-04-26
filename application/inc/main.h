@@ -8,15 +8,11 @@
 /********************** Debugging tools, UART and ERRORS **********************/
 //#define DEBUG_WITH_UART       // Debug ADXL362 with UART (Segger RTT)
 //#define DEBUG_WITH_ERRORS     // Debug ADXL362 with ERRORS (app_error_handler)
+#define ADXL_ERROR_BASE_NUM      (0x4000)       ///< ADXL362 error base
+#define ADXL362_REGISTER_WRITE_FAILED	(ADXL_ERROR_BASE_NUM + 0)  ///< Failed to program register
 /******************************************************************************/
-
 /* Event adress get function does not work */
 #define NRF_LPCOMP_EVENT_UP_address 0x40013108UL
-
-#define ADXL_ERROR_BASE_NUM      (0x4000)       ///< ADXL362 error base
-
-#define ADXL362_REGISTER_WRITE_FAILED	(ADXL_ERROR_BASE_NUM + 0)  ///< Failed to program register
-
 /********************************** Pin map **********************************/
 #define SCK_PIN				  	11
 #define MOSI_PIN			  	12
@@ -54,13 +50,12 @@
 #define TEMP_OFFS				10
 #define STEPS_OFFS				14
 /*******************************************************************************/
+
+/******************************** Variables ************************************/
 extern uint8_t ADXL362_TX_BUFFER[8];
 extern uint8_t ADXL362_RX_BUFFER[8];
 extern uint32_t ADXL362_BUFFER_LENGTH;
 extern const nrf_drv_rtc_t rtc;
 extern bool volatile timer_evt_called;
-/*
-*	Low power blocking delay fucnction.
-*	parameter time_delay, is multiples of 30uS.
-*/
 void rtc_delay(uint32_t time_delay);
+/*******************************************************************************/
