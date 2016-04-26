@@ -9,7 +9,7 @@
 //#define DEBUG_WITH_UART       // Debug ADXL362 with UART (Segger RTT)
 //#define DEBUG_WITH_ERRORS     // Debug ADXL362 with ERRORS (app_error_handler)
 #define ADXL_ERROR_BASE_NUM      (0x4000)       ///< ADXL362 error base
-#define ADXL362_REGISTER_WRITE_FAILED	(ADXL_ERROR_BASE_NUM + 0)  ///< Failed to program register
+#define ADXL362_REGISTER_WRITE_FAILED	(ADXL_ERROR_BASE_NUM + 0)  
 /******************************************************************************/
 /* Event adress get function does not work */
 #define NRF_LPCOMP_EVENT_UP_address 0x40013108UL
@@ -40,15 +40,14 @@
 
 /*********************************** Radio ************************************/
 #define BD_ADDR_OFFS			3
-#define TEMP_OFFS				15
-#define STEPS_OFFS				19
+#define TEMP_OFFS				16
+#define STEPS_OFFS				22
 #define INITIAL_TIMEOUT         (2000)
 #define LFCLK_STARTUP_TIME_US   (1600)
 
 #if INITIAL_TIMEOUT - LFCLK_STARTUP_TIME_US < 400
 #error "Initial timeout too short!"
 #endif
-
 /*******************************************************************************/
 
 /******************************** Variables ************************************/

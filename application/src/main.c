@@ -59,7 +59,7 @@ static uint8_t adv_pdu[36 + 3] =
 {
     0x42, 0x24, 0x00,
     0xE2, 0xA3, 0x01, 0xE7, 0x61, 0xF7, 0x02, 0x01, 0x04, 0x1A, 0xFF, 0x59, 0x00, 0x02, 0x15, 0x01, 0x12, 0x23,
-    0x34, 0x45, 0x56, 0x67, 0x78, 0x89, 0x9A, 0xAB, 0xBC, 0xCD, 0xDE, 0xEF, 0xF0, 0x01, 0xDE, 0xAD, 0xBE, 0xEF
+    0x34, 0xFF, 0x56, 0x67, 0x78, 0x89, 0x9A, 0xAB, 0xBC, 0xCD, 0xDE, 0xEF, 0xF0, 0x01, 0xDE, 0xAD, 0xBE, 0xEF
 };
 /************************************************************************************************/
 
@@ -269,6 +269,16 @@ void rtc_delay_ms(uint32_t timeout_us){
 	nrf_drv_rtc_disable(&rtc);
 }
 
+void get_number_of_steps(void)
+{
+    /* Read #steps and put it into tx buffer */
+    uint16_t steps = 0;
+    nrf_timer_task_trigger(NRF_TIMER0, NRF_TIMER_TASK_CAPTURE0);
+    steps = nrf_drv_timer_capture_get(&timer0, NRF_TIMER_CC_CHANNEL0);
+    adv_pdu[STEPS_OFFS + 1] = steps;
+    adv_pdu[STEPS_OFFS + 0] = (steps >> 8);
+}
+
 void temperature_measurement(void)
 {
 	uint32_t temp;
@@ -285,10 +295,10 @@ void temperature_measurement(void)
 	NRF_TEMP->INTENCLR = 1;
 
 	temp = NRF_TEMP->TEMP;
-	adv_pdu[TEMP_OFFS + 0] = temp;
-	adv_pdu[TEMP_OFFS + 1] = (temp >> 8);
-	adv_pdu[TEMP_OFFS + 2] = (temp >> 16);
-	adv_pdu[TEMP_OFFS + 3] = (temp >> 24);
+	adv_pdu[TEMP_OFFS + 3] = temp;
+	adv_pdu[TEMP_OFFS + 2] = (temp >> 8);
+	adv_pdu[TEMP_OFFS + 1] = (temp >> 16);
+	adv_pdu[TEMP_OFFS + 0] = (temp >> 24);
 }
 
 void ADXL362_motiondetect_cfg(void)
@@ -384,9 +394,8 @@ static void beacon_handler(void)
             __SEV();
             __WFE();
         }
-		/* Read #steps and put it into tx buffer */
-		nrf_timer_task_trigger(NRF_TIMER0, NRF_TIMER_TASK_CAPTURE0);
-		adv_pdu[STEPS_OFFS] = nrf_drv_timer_capture_get(&timer0, NRF_TIMER_CC_CHANNEL0);
+
+        get_number_of_steps();
 
         hal_clock_hfclk_enable();
 
