@@ -9,7 +9,7 @@
 //#define DEBUG_WITH_UART       // Debug ADXL362 with UART (Segger RTT)
 //#define DEBUG_WITH_ERRORS     // Debug ADXL362 with ERRORS (app_error_handler)
 #define ADXL_ERROR_BASE_NUM      (0x4000)       ///< ADXL362 error base
-#define ADXL362_REGISTER_WRITE_FAILED	(ADXL_ERROR_BASE_NUM + 0)  
+#define ADXL362_REGISTER_WRITE_FAILED	(ADXL_ERROR_BASE_NUM + 0)
 /******************************************************************************/
 /* Event adress get function does not work */
 #define NRF_LPCOMP_EVENT_UP_address 0x40013108UL
@@ -30,10 +30,10 @@
 #define ADXL362_FIFO_SIZE     	260    	// # samples in ADXL fifo, 0-511
 #define ADXL362_FIFO_TEMP     	0      	// 0: skip temp read 1: store temp in fifo
 #define ADXL362_ACT_RefAbs    	1      	// 0: absolute 1: reference
-#define ADXL362_ACT_THRESH    	100   	// 11 bit unsigned int
+#define ADXL362_ACT_THRESH    	50   	// 11 bit unsigned int
 #define ADXL362_ACT_TIME      	1		// (# of seconds * Hz)
 #define ADXL362_INACT_RefAbs  	1      	// 0: absolute 1: reference
-#define ADXL362_INACT_THRESH  	100   	// 11 bit unsigned int
+#define ADXL362_INACT_THRESH  	25   	// 11 bit unsigned int
 #define ADXL362_INACT_TIME    	1     	// (# of seconds * Hz)
 #define ADXL362_ODR           	ADXL362_ODR_12_5_HZ  // Output data rate
 /******************************************************************************/

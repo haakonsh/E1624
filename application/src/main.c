@@ -69,7 +69,6 @@ bool volatile timer_evt_called = false;
 nrf_ppi_channel_t ppi_channel1;
 
 bool volatile radio_isr_called;
-bool volatile rtc_isr_called;
 uint32_t time_us;
 uint32_t interval_us = 1000000;
 /************************************************************************************************/
@@ -130,7 +129,7 @@ void RADIO_IRQHandler(void)
     radio_isr_called = true;
 }
 
-void ADXL362_int_pin_event_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
+void gpiote_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
 {
     // If PIN is high
     if(nrf_gpio_pin_read(ADXL362_INT_PIN))
@@ -217,7 +216,7 @@ void gpiote_init(void)
 	/* Init GPIOTE pin */
 	APP_ERROR_CHECK(nrf_drv_gpiote_in_init(ADXL362_INT_PIN,
 	                             &ADXL362_int_pin_cfg,
-	                             ADXL362_int_pin_event_handler));
+	                             gpiote_handler));
 	/* Eneable toggle event and interrupt on pin */
 	nrf_drv_gpiote_in_event_enable(ADXL362_INT_PIN, true);
 }
@@ -294,7 +293,7 @@ void temperature_measurement(void)
 	NRF_TEMP->TASKS_STOP = 1;
 	NRF_TEMP->INTENCLR = 1;
 
-	temp = NRF_TEMP->TEMP;
+	temp = (NRF_TEMP->TEMP / 4);
 	adv_pdu[TEMP_OFFS + 3] = temp;
 	adv_pdu[TEMP_OFFS + 2] = (temp >> 8);
 	adv_pdu[TEMP_OFFS + 1] = (temp >> 16);
@@ -406,7 +405,7 @@ static void beacon_handler(void)
         rtc_delay_ms(time_us);
 
 		/* Read temperature and put it into tx buffer */
-		temperature_measurement();
+		//temperature_measurement();
         while ( !timer_evt_called )
         {
             __WFE();
@@ -421,7 +420,7 @@ static void beacon_handler(void)
 
         time_us = interval_us - LFCLK_STARTUP_TIME_US;
         /* Enable gpiote from executing ADXL362_int_pin_event_handler(); */
-        nrf_drv_gpiote_in_event_enable(ADXL362_INT_PIN, true);
+        //nrf_drv_gpiote_in_event_enable(ADXL362_INT_PIN, true);
     } while ( 1 );
 }
 /************************************************************************************************/
