@@ -281,7 +281,6 @@ void get_number_of_steps(void)
 void temperature_measurement(void)
 {
 	uint32_t temp;
-	NRF_TEMP->INTENSET = 1;
 	NRF_TEMP->TASKS_START = 1;
 	while(!NRF_TEMP->EVENTS_DATARDY)
 	{
@@ -291,7 +290,6 @@ void temperature_measurement(void)
 	}
 	NRF_TEMP->EVENTS_DATARDY = 0;
 	NRF_TEMP->TASKS_STOP = 1;
-	NRF_TEMP->INTENCLR = 1;
 
 	temp = (NRF_TEMP->TEMP / 4);
 	adv_pdu[TEMP_OFFS + 3] = temp;
@@ -389,12 +387,6 @@ static void beacon_handler(void)
         rtc_delay_ms(time_us);
         /* Disable gpiote from executing ADXL362_int_pin_event_handler(); */
         nrf_drv_gpiote_in_event_disable(ADXL362_INT_PIN);
-        while ( !timer_evt_called )
-        {
-            __WFE();
-            __SEV();
-            __WFE();
-        }
 
         get_number_of_steps();
 
@@ -406,12 +398,7 @@ static void beacon_handler(void)
 
 		/* Read temperature and put it into tx buffer */
 		//temperature_measurement();
-        while ( !timer_evt_called )
-        {
-            __WFE();
-            __SEV();
-            __WFE();
-        }
+
         send_one_packet(37);
         send_one_packet(38);
         send_one_packet(39);
@@ -420,7 +407,7 @@ static void beacon_handler(void)
 
         time_us = interval_us - LFCLK_STARTUP_TIME_US;
         /* Enable gpiote from executing ADXL362_int_pin_event_handler(); */
-        //nrf_drv_gpiote_in_event_enable(ADXL362_INT_PIN, true);
+        nrf_drv_gpiote_in_event_enable(ADXL362_INT_PIN, true);
     } while ( 1 );
 }
 /************************************************************************************************/

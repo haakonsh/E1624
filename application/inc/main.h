@@ -33,7 +33,7 @@
 #define ADXL362_ACT_THRESH    	50   	// 11 bit unsigned int
 #define ADXL362_ACT_TIME      	1		// (# of seconds * Hz)
 #define ADXL362_INACT_RefAbs  	1      	// 0: absolute 1: reference
-#define ADXL362_INACT_THRESH  	25   	// 11 bit unsigned int
+#define ADXL362_INACT_THRESH  	20   	// 11 bit unsigned int
 #define ADXL362_INACT_TIME    	1     	// (# of seconds * Hz)
 #define ADXL362_ODR           	ADXL362_ODR_12_5_HZ  // Output data rate
 /******************************************************************************/
