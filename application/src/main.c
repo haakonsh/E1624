@@ -67,6 +67,8 @@ static uint8_t adv_pdu[36 + 3] =
 volatile uint32_t Counter = 0;
 bool volatile timer_evt_called = false;
 nrf_ppi_channel_t ppi_channel1;
+nrf_ppi_channel_t ppi_channel2;
+nrf_ppi_channel_t ppi_channel3;
 
 bool volatile radio_isr_called;
 uint32_t time_us;
@@ -170,6 +172,24 @@ static void ppi_init(void)
 
     /* Enable the configured PPI channel */
     APP_ERROR_CHECK(nrf_drv_ppi_channel_enable(ppi_channel1));
+
+    /* Configure 1st available PPI channel to stop RTC on NRF_GPIOTE_PORT_EVENT_UP*/
+    APP_ERROR_CHECK(nrf_drv_ppi_channel_alloc(&ppi_channel2));
+    APP_ERROR_CHECK(nrf_drv_ppi_channel_assign(ppi_channel2,
+                                         nrf_drv_gpiote_in_event_addr_get(ADXL362_INT_PIN),
+                                         nrf_drv_rtc_task_address_get(&rtc, NRF_RTC_TASK_STOP)));
+
+    /* Enable the configured PPI channel */
+    APP_ERROR_CHECK(nrf_drv_ppi_channel_enable(ppi_channel2));
+
+    /* Configure 1st available PPI channel to start RTC on NRF_GPIOTE_PORT_EVENT_DOWN*/
+    APP_ERROR_CHECK(nrf_drv_ppi_channel_alloc(&ppi_channel3));
+    APP_ERROR_CHECK(nrf_drv_ppi_channel_assign(ppi_channel3,
+                                         nrf_drv_gpiote_in_event_addr_get(ADXL362_INT_PIN),
+                                         nrf_drv_rtc_task_address_get(&rtc, NRF_RTC_TASK_START)));
+
+    /* Enable the configured PPI channel */
+    APP_ERROR_CHECK(nrf_drv_ppi_channel_enable(ppi_channel3));
 }
 
 /* Function starting the internal LFCLK XTAL oscillator */
@@ -202,8 +222,6 @@ void ADXL362_init(void)
 	/* Power up ADXL362 */
 	NRF_GPIO->OUTSET = (1 << VDD_PIN);
 	rtc_delay(STARTUP_TIME);
-	/*  */
-	nrf_drv_rtc_uninit(&rtc);
 }
 
 void gpiote_init(void)
@@ -281,6 +299,9 @@ void get_number_of_steps(void)
 void temperature_measurement(void)
 {
 	uint32_t temp;
+    NRF_TEMP->EVENTS_DATARDY = 0;
+    NVIC_ClearPendingIRQ(TEMP_IRQn);
+    NRF_TEMP->INTENSET = 1;
 	NRF_TEMP->TASKS_START = 1;
 	while(!NRF_TEMP->EVENTS_DATARDY)
 	{
@@ -288,14 +309,14 @@ void temperature_measurement(void)
 		__SEV();
 		__WFE();
 	}
-	NRF_TEMP->EVENTS_DATARDY = 0;
-	NRF_TEMP->TASKS_STOP = 1;
+    NRF_TEMP->TASKS_STOP = 1;
+    NRF_TEMP->INTENCLR = 1;
 
 	temp = (NRF_TEMP->TEMP / 4);
-	adv_pdu[TEMP_OFFS + 3] = temp;
-	adv_pdu[TEMP_OFFS + 2] = (temp >> 8);
-	adv_pdu[TEMP_OFFS + 1] = (temp >> 16);
-	adv_pdu[TEMP_OFFS + 0] = (temp >> 24);
+	adv_pdu[TEMP_OFFS + 0] = temp;
+	adv_pdu[TEMP_OFFS + 1] = (temp >> 8);
+	adv_pdu[TEMP_OFFS + 2] = (temp >> 16);
+	adv_pdu[TEMP_OFFS + 3] = (temp >> 24);
 }
 
 void ADXL362_motiondetect_cfg(void)
@@ -383,7 +404,6 @@ static void beacon_handler(void)
 
     do
     {
-        timer_evt_called = false;
         rtc_delay_ms(time_us);
         /* Disable gpiote from executing ADXL362_int_pin_event_handler(); */
         nrf_drv_gpiote_in_event_disable(ADXL362_INT_PIN);
@@ -392,7 +412,6 @@ static void beacon_handler(void)
 
         hal_clock_hfclk_enable();
 
-        timer_evt_called = false;
         time_us = LFCLK_STARTUP_TIME_US;
         rtc_delay_ms(time_us);
 
