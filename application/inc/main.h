@@ -20,7 +20,7 @@
 #define SS_PIN				  	15
 #define VDD_PIN					14
 #define ADXL362_INT_PIN_1 		17
-#define ADXL362_INT_PIN_2 		9
+#define ADXL362_INT_PIN_2 		8
 #define LPCOMP_PIN				NRF_LPCOMP_INPUT_3
 /******************************************************************************/
 
