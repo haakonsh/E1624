@@ -67,6 +67,7 @@ static uint8_t adv_pdu[36 + 3] =
 volatile uint32_t Counter = 0;
 bool volatile timer_evt_called = false;
 nrf_ppi_channel_t ppi_channel1;
+nrf_ppi_channel_t ppi_channel2;
 
 bool volatile radio_isr_called;
 uint32_t time_us;
@@ -75,6 +76,7 @@ uint32_t interval_us = 1000000;
 
 /*************************************** Instantiations *****************************************/
 const nrf_drv_timer_t timer0 	= NRF_DRV_TIMER_INSTANCE(0);
+const nrf_drv_timer_t timer1 	= NRF_DRV_TIMER_INSTANCE(0);
 const nrf_drv_rtc_t rtc 		= NRF_DRV_RTC_INSTANCE(0);
 /************************************************************************************************/
 
@@ -170,6 +172,15 @@ static void ppi_init(void)
 
     /* Enable the configured PPI channel */
     APP_ERROR_CHECK(nrf_drv_ppi_channel_enable(ppi_channel1));
+
+    /* Configure 1st available PPI channel to increment timer1 on pin change */
+    APP_ERROR_CHECK(nrf_drv_ppi_channel_alloc(&ppi_channel2));
+    APP_ERROR_CHECK(nrf_drv_ppi_channel_assign(ppi_channel2,
+                                         nrf_drv_gpiote_in_event_addr_get(ADXL362_INT_PIN_1),
+                                         nrf_drv_timer_task_address_get(&timer1, NRF_TIMER_TASK_COUNT)));
+
+    /* Enable the configured PPI channel */
+    APP_ERROR_CHECK(nrf_drv_ppi_channel_enable(ppi_channel2));
 }
 
 /* Function starting the internal LFCLK XTAL oscillator */
@@ -216,7 +227,7 @@ void gpiote_init(void)
 	                             &ADXL362_int_pin_cfg,
 	                             gpiote_handler));
 	/* Eneable toggle event and interrupt on pin */
-	nrf_drv_gpiote_in_event_enable(ADXL362_INT_PIN, true);
+	nrf_drv_gpiote_in_event_enable(ADXL362_INT_PIN, false);
 }
 /************************************************************************************************/
 
@@ -406,7 +417,7 @@ static void beacon_handler(void)
 
         time_us = interval_us - LFCLK_STARTUP_TIME_US;
         /* Enable gpiote from executing ADXL362_int_pin_event_handler(); */
-        nrf_drv_gpiote_in_event_enable(ADXL362_INT_PIN, true);
+        nrf_drv_gpiote_in_event_enable(ADXL362_INT_PIN, false);
     } while ( 1 );
 }
 /************************************************************************************************/
@@ -418,6 +429,7 @@ int main(void)
 	ppi_init();
 
 	APP_ERROR_CHECK(nrf_drv_timer_init(&timer0, &timer0_config, timer_event_handler));
+    APP_ERROR_CHECK(nrf_drv_timer_init(&timer1, &timer0_config, timer_event_handler));
 
 	APP_ERROR_CHECK(nrf_drv_lpcomp_init(&lpcomp_config, lpcomp_event_handler));
 	NRF_LPCOMP->HYST = COMP_HYST_HYST_Hyst50mV;
