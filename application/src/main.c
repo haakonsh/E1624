@@ -66,9 +66,9 @@ static uint8_t adv_pdu[36 + 3] =
 /*********************************** variable declarations **************************************/
 volatile uint32_t Counter = 0;
 bool volatile timer_evt_called = false;
-nrf_ppi_channel_t ppi_channel1;
-nrf_ppi_channel_t ppi_channel2;
-nrf_ppi_channel_t ppi_channel3;
+nrf_ppi_channel_t ppi_channel_lpcomp;
+nrf_ppi_channel_t ppi_channel_rtc_start;
+nrf_ppi_channel_t ppi_channel_rtc_stop;
 
 bool volatile radio_isr_called;
 uint32_t time_us;
@@ -121,7 +121,8 @@ static const hal_spi_cfg_t hal_spi_cfg =
 };
 
 /* ADXL362_INT_PIN configuration */
-nrf_drv_gpiote_in_config_t ADXL362_int_pin_cfg = GPIOTE_CONFIG_IN_SENSE_TOGGLE(false);
+nrf_drv_gpiote_in_config_t ADXL362_int_pin_HiToLo_cfg = GPIOTE_CONFIG_IN_SENSE_HITOLO(false);
+nrf_drv_gpiote_in_config_t ADXL362_int_pin_LoToHi_cfg = GPIOTE_CONFIG_IN_SENSE_LOTOHI(false);
 /************************************************************************************************/
 
 /**************************************** Event/ISR handlers ****************************************/
@@ -134,14 +135,14 @@ void RADIO_IRQHandler(void)
 void gpiote_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
 {
     // If PIN is high
-    if(nrf_gpio_pin_read(ADXL362_INT_PIN))
+    /*if(nrf_gpio_pin_read(ADXL362_INT_PIN))
     {
 		NRF_RTC0->TASKS_STOP;
         __WFE();
         __SEV();
         __WFE();
 		NRF_RTC0->TASKS_START;
-    }
+    }*/
 }
 
 static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
@@ -159,37 +160,56 @@ lpcomp_events_handler_t p_lpcomp_event_handler = lpcomp_event_handler;
 /************************************************************************************************/
 
 /*************************************** Intitializations ***************************************/
+void gpiote_init(void)
+{
+    /* Init GPIOTE module */
+    if(!nrf_drv_gpiote_is_init())
+    {
+        APP_ERROR_CHECK(nrf_drv_gpiote_init());
+    }
+    /* Init GPIOTE channels */
+    APP_ERROR_CHECK(nrf_drv_gpiote_in_init(ADXL362_INT_PIN_1,
+                                            &ADXL362_int_pin_HiToLo_cfg,
+                                            gpiote_handler));
+    APP_ERROR_CHECK(nrf_drv_gpiote_in_init(ADXL362_INT_PIN_2,
+                                            &ADXL362_int_pin_LoToHi_cfg,
+                                            gpiote_handler));
+
+    /* Eneable events on pin */
+    nrf_drv_gpiote_in_event_enable(ADXL362_INT_PIN_1, false);
+    nrf_drv_gpiote_in_event_enable(ADXL362_INT_PIN_2, false);
+}
 static void ppi_init(void)
 {
 	/* Initialize ppi */
     APP_ERROR_CHECK(nrf_drv_ppi_init());
 
     /* Configure 1st available PPI channel to increment TIMER0 counter on NRF_LPCOMP_EVENT_UP event */
-    APP_ERROR_CHECK(nrf_drv_ppi_channel_alloc(&ppi_channel1));
-    APP_ERROR_CHECK(nrf_drv_ppi_channel_assign(ppi_channel1,
+    APP_ERROR_CHECK(nrf_drv_ppi_channel_alloc(&ppi_channel_lpcomp));
+    APP_ERROR_CHECK(nrf_drv_ppi_channel_assign(ppi_channel_lpcomp,
                                          NRF_LPCOMP_EVENT_UP_address,
                                          nrf_drv_timer_task_address_get(&timer0, NRF_TIMER_TASK_COUNT)));
 
     /* Enable the configured PPI channel */
-    APP_ERROR_CHECK(nrf_drv_ppi_channel_enable(ppi_channel1));
+    APP_ERROR_CHECK(nrf_drv_ppi_channel_enable(ppi_channel_lpcomp));
 
     /* Configure 1st available PPI channel to stop RTC on NRF_GPIOTE_PORT_EVENT_UP*/
-    APP_ERROR_CHECK(nrf_drv_ppi_channel_alloc(&ppi_channel2));
-    APP_ERROR_CHECK(nrf_drv_ppi_channel_assign(ppi_channel2,
-                                         nrf_drv_gpiote_in_event_addr_get(ADXL362_INT_PIN),
+    APP_ERROR_CHECK(nrf_drv_ppi_channel_alloc(&ppi_channel_rtc_stop));
+    APP_ERROR_CHECK(nrf_drv_ppi_channel_assign(ppi_channel_rtc_stop,
+                                         nrf_drv_gpiote_in_event_addr_get(ADXL362_INT_PIN_2),
                                          nrf_drv_rtc_task_address_get(&rtc, NRF_RTC_TASK_STOP)));
 
     /* Enable the configured PPI channel */
-    APP_ERROR_CHECK(nrf_drv_ppi_channel_enable(ppi_channel2));
+    APP_ERROR_CHECK(nrf_drv_ppi_channel_enable(ppi_channel_rtc_stop));
 
     /* Configure 1st available PPI channel to start RTC on NRF_GPIOTE_PORT_EVENT_DOWN*/
-    APP_ERROR_CHECK(nrf_drv_ppi_channel_alloc(&ppi_channel3));
-    APP_ERROR_CHECK(nrf_drv_ppi_channel_assign(ppi_channel3,
-                                         nrf_drv_gpiote_in_event_addr_get(ADXL362_INT_PIN),
+    APP_ERROR_CHECK(nrf_drv_ppi_channel_alloc(&ppi_channel_rtc_start));
+    APP_ERROR_CHECK(nrf_drv_ppi_channel_assign(ppi_channel_rtc_start,
+                                         nrf_drv_gpiote_in_event_addr_get(ADXL362_INT_PIN_1),
                                          nrf_drv_rtc_task_address_get(&rtc, NRF_RTC_TASK_START)));
 
     /* Enable the configured PPI channel */
-    APP_ERROR_CHECK(nrf_drv_ppi_channel_enable(ppi_channel3));
+    APP_ERROR_CHECK(nrf_drv_ppi_channel_enable(ppi_channel_rtc_start));
 }
 
 /* Function starting the internal LFCLK XTAL oscillator */
@@ -224,20 +244,6 @@ void ADXL362_init(void)
 	rtc_delay(STARTUP_TIME);
 }
 
-void gpiote_init(void)
-{
-	/* Init GPIOTE module */
-	if(!nrf_drv_gpiote_is_init())
-	{
-		APP_ERROR_CHECK(nrf_drv_gpiote_init());
-	}
-	/* Init GPIOTE pin */
-	APP_ERROR_CHECK(nrf_drv_gpiote_in_init(ADXL362_INT_PIN,
-	                             &ADXL362_int_pin_cfg,
-	                             gpiote_handler));
-	/* Eneable toggle event and interrupt on pin */
-	nrf_drv_gpiote_in_event_enable(ADXL362_INT_PIN, true);
-}
 /************************************************************************************************/
 
 /************************************** Utility functions ***************************************/
@@ -405,8 +411,8 @@ static void beacon_handler(void)
     do
     {
         rtc_delay_ms(time_us);
-        /* Disable gpiote from executing ADXL362_int_pin_event_handler(); */
-        nrf_drv_gpiote_in_event_disable(ADXL362_INT_PIN);
+        /* Disable gpiote event on ADXL362_INT_PIN_2 */
+        nrf_drv_gpiote_in_event_disable(ADXL362_INT_PIN_2);
 
         get_number_of_steps();
 
@@ -416,7 +422,7 @@ static void beacon_handler(void)
         rtc_delay_ms(time_us);
 
 		/* Read temperature and put it into tx buffer */
-		//temperature_measurement();
+		temperature_measurement();
 
         send_one_packet(37);
         send_one_packet(38);
@@ -425,8 +431,8 @@ static void beacon_handler(void)
         hal_clock_hfclk_disable();
 
         time_us = interval_us - LFCLK_STARTUP_TIME_US;
-        /* Enable gpiote from executing ADXL362_int_pin_event_handler(); */
-        nrf_drv_gpiote_in_event_enable(ADXL362_INT_PIN, true);
+        /* Enable gpiote event on ADXL362_INT_PIN_2 */
+        nrf_drv_gpiote_in_event_enable(ADXL362_INT_PIN_2, false);
     } while ( 1 );
 }
 /************************************************************************************************/
