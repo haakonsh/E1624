@@ -4,6 +4,8 @@
 
 #include "stdio.h"
 #include "nrf_drv_rtc.h"
+#include "nrf_drv_gpiote.h"
+#include "nrf_drv_timer.h"
 
 /********************** Debugging tools, UART and ERRORS **********************/
 //#define DEBUG_WITH_UART       // Debug ADXL362 with UART (Segger RTT)
@@ -19,8 +21,7 @@
 #define MISO_PIN			  	6
 #define SS_PIN				  	15
 #define VDD_PIN					14
-#define ADXL362_INT_PIN_1 		17
-#define ADXL362_INT_PIN_2 		8
+#define ADXL362_INT_PIN 		17
 #define LPCOMP_PIN				NRF_LPCOMP_INPUT_3
 /******************************************************************************/
 
@@ -58,4 +59,11 @@ extern uint32_t ADXL362_BUFFER_LENGTH;
 extern const nrf_drv_rtc_t rtc;
 extern bool volatile timer_evt_called;
 void rtc_delay(uint32_t time_delay);
+/*******************************************************************************/
+
+/************************** Function declarations ******************************/
+static void rtc_handler(nrf_drv_rtc_int_type_t int_type);
+void gpiote_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action);
+void timer_event_handler1(nrf_timer_event_t event_type, void * p_context);
+void timer_event_handler2(nrf_timer_event_t event_type, void * p_context);
 /*******************************************************************************/

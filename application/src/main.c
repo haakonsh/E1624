@@ -76,12 +76,12 @@ uint32_t interval_us = 1000000;
 
 /*************************************** Instantiations *****************************************/
 const nrf_drv_timer_t timer0 	= NRF_DRV_TIMER_INSTANCE(0);
-const nrf_drv_timer_t timer1 	= NRF_DRV_TIMER_INSTANCE(0);
+const nrf_drv_timer_t timer1 	= NRF_DRV_TIMER_INSTANCE(1);
 const nrf_drv_rtc_t rtc 		= NRF_DRV_RTC_INSTANCE(0);
 /************************************************************************************************/
 
 /****************************************** Configs *********************************************/
-const nrf_drv_timer_config_t timer0_config = {
+const nrf_drv_timer_config_t timer_config = {
 	.frequency			= NRF_TIMER_FREQ_31250Hz,
 	.mode				= NRF_TIMER_MODE_LOW_POWER_COUNTER,
 	.bit_width			= NRF_TIMER_BIT_WIDTH_16,
@@ -124,42 +124,6 @@ static const hal_spi_cfg_t hal_spi_cfg =
 nrf_drv_gpiote_in_config_t ADXL362_int_pin_cfg = GPIOTE_CONFIG_IN_SENSE_TOGGLE(false);
 /************************************************************************************************/
 
-/**************************************** Event/ISR handlers ****************************************/
-void RADIO_IRQHandler(void)
-{
-    NRF_RADIO->EVENTS_DISABLED = 0;
-    radio_isr_called = true;
-}
-
-void gpiote_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
-{
-    uint counter = get_int_pin_status;
-
-    // If counter is an even number
-    if((counter % 2 ) == 0)
-    {
-        NRF_RTC0->TASKS_STOP;
-    }
-    else
-    {
-        NRF_RTC0->TASKS_START;
-    }
-}
-
-static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
-{
-    if (int_type == NRF_DRV_RTC_INT_COMPARE0)
-    {
-        timer_evt_called = true;
-    }
-}
-
-void timer_event_handler(nrf_timer_event_t event_type, void * p_context){}
-
-void lpcomp_event_handler(nrf_lpcomp_event_t event){};
-lpcomp_events_handler_t p_lpcomp_event_handler = lpcomp_event_handler;
-/************************************************************************************************/
-
 /*************************************** Intitializations ***************************************/
 static void ppi_init(void)
 {
@@ -178,7 +142,7 @@ static void ppi_init(void)
     /* Configure 1st available PPI channel to increment timer1 on pin change */
     APP_ERROR_CHECK(nrf_drv_ppi_channel_alloc(&ppi_channel2));
     APP_ERROR_CHECK(nrf_drv_ppi_channel_assign(ppi_channel2,
-                                         nrf_drv_gpiote_in_event_addr_get(ADXL362_INT_PIN_1),
+                                         nrf_drv_gpiote_in_event_addr_get(ADXL362_INT_PIN),
                                          nrf_drv_timer_task_address_get(&timer1, NRF_TIMER_TASK_COUNT)));
 
     /* Enable the configured PPI channel */
@@ -393,7 +357,46 @@ static void uicr_bd_addr_set(void)
     }
 }
 
-static void beacon_handler(void)
+/************************************************************************************************/
+
+/************************************** Event/ISR handlers **************************************/
+void RADIO_IRQHandler(void)
+{
+    NRF_RADIO->EVENTS_DISABLED = 0;
+    radio_isr_called = true;
+}
+
+void gpiote_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
+{
+    // uint counter = get_int_pin_status();
+
+    // check if counter is an even number
+    if((get_int_pin_status() % 2 ) == 0)
+    {
+        NRF_RTC0->TASKS_STOP;
+    }
+    else
+    {
+        NRF_RTC0->TASKS_START;
+    }
+}
+
+static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
+{
+    if (int_type == NRF_DRV_RTC_INT_COMPARE0)
+    {
+        timer_evt_called = true;
+    }
+}
+
+void timer_event_handler(nrf_timer_event_t event_type, void * p_context){}
+
+void lpcomp_event_handler(nrf_lpcomp_event_t event){}
+lpcomp_events_handler_t p_lpcomp_event_handler = lpcomp_event_handler;
+/*********************************************************************************************/
+
+/************************************ Application handle**************************************/
+static void application_handler(void)
 {
     hal_radio_reset();
     hal_timer_start();
@@ -429,16 +432,15 @@ static void beacon_handler(void)
         nrf_drv_gpiote_in_event_enable(ADXL362_INT_PIN, false);
     } while ( 1 );
 }
-/************************************************************************************************/
-
+/*********************************************************************************************/
 int main(void)
 {
 	uint32_t scb_scr;
 
 	ppi_init();
 
-	APP_ERROR_CHECK(nrf_drv_timer_init(&timer0, &timer0_config, timer_event_handler));
-    APP_ERROR_CHECK(nrf_drv_timer_init(&timer1, &timer0_config, timer_event_handler));
+	APP_ERROR_CHECK(nrf_drv_timer_init(&timer0, &timer_config, timer_event_handler));
+    APP_ERROR_CHECK(nrf_drv_timer_init(&timer1, &timer_config, timer_event_handler));
 
 	APP_ERROR_CHECK(nrf_drv_lpcomp_init(&lpcomp_config, lpcomp_event_handler));
 	NRF_LPCOMP->HYST = COMP_HYST_HYST_Hyst50mV;
@@ -472,6 +474,6 @@ int main(void)
 
     while (true)
     {
-		beacon_handler();
+		application_handler();
     }
 }
