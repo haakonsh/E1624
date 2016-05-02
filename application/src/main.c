@@ -133,14 +133,16 @@ void RADIO_IRQHandler(void)
 
 void gpiote_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
 {
-    // If PIN is high
-    if(nrf_gpio_pin_read(ADXL362_INT_PIN))
+    uint counter = get_int_pin_status;
+
+    // If counter is an even number
+    if((counter % 2 ) == 0)
     {
-		NRF_RTC0->TASKS_STOP;
-        __WFE();
-        __SEV();
-        __WFE();
-		NRF_RTC0->TASKS_START;
+        NRF_RTC0->TASKS_STOP;
+    }
+    else
+    {
+        NRF_RTC0->TASKS_START;
     }
 }
 
@@ -275,6 +277,13 @@ void rtc_delay_ms(uint32_t timeout_us){
 	while(!timer_evt_called);
     /* Stop the RTC */
 	nrf_drv_rtc_disable(&rtc);
+}
+
+uint16_t get_int_pin_status(void)
+{
+    /* Read value of time1 and determine which state int_pin has */
+    nrf_timer_task_trigger(NRF_TIMER1, NRF_TIMER_TASK_CAPTURE1);
+    return nrf_drv_timer_capture_get(&timer1, NRF_TIMER_CC_CHANNEL1);
 }
 
 void get_number_of_steps(void)
