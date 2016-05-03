@@ -8,6 +8,7 @@ This piezo buzzer also powers the circuit through an LTC3588-1, an energy harves
 The BLE protocol is not fully implemented. At this point the Bluetooth Low Energy(BLE) Payload Data Unit(PDU) is not conforming to any protocol. It's just sending out indirect advertising packets. The reason is the high current consumption of the SoftDevice's boot sequence, and that of a BLE connection event (listening for packets is very expensive). 
 In the future, some protocols (Eddystone etc.) may support indirect advertising without a connection. 
 
+The radio and spi are controlled with proprietary lightweight drivers included in the repo, however the spi can run fine from the SDK driver if you want. 
 
 
 Project should compile with one warning if extracted correctly into the SDK.
