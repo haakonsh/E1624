@@ -49,6 +49,7 @@ nRF5_SDK_11.0.0_89a8197/components/drivers_nrf/timer*
 nRF5_SDK_11.0.0_89a8197/components/drivers_nrf/common*
 nRF5_SDK_11.0.0_89a8197/components/drivers_nrf/nrf_soc_nosd*
 nRF5_SDK_11.0.0_89a8197/components/drivers_nrf/common*
+nRF5_SDK_11.0.0_89a8197/components/drivers_nrf/ppi*
 
 # Libraries #
 nRF5_SDK_11.0.0_89a8197/components/libraries/util*
