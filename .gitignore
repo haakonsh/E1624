@@ -45,6 +45,10 @@ nRF5_SDK_11.0.0_89a8197/components/drivers_nrf/gpiote*
 nRF5_SDK_11.0.0_89a8197/components/drivers_nrf/hal*
 nRF5_SDK_11.0.0_89a8197/components/drivers_nrf/lpcomp*
 nRF5_SDK_11.0.0_89a8197/components/drivers_nrf/rtc*
+nRF5_SDK_11.0.0_89a8197/components/drivers_nrf/timer*
+nRF5_SDK_11.0.0_89a8197/components/drivers_nrf/common*
+nRF5_SDK_11.0.0_89a8197/components/drivers_nrf/nrf_soc_nosd*
+nRF5_SDK_11.0.0_89a8197/components/drivers_nrf/common*
 
 # Libraries #
 nRF5_SDK_11.0.0_89a8197/components/libraries/util*
@@ -64,6 +68,9 @@ nRF5_SDK_11.0.0_89a8197/examples/peripheral/rtc/pca10040/arm5_no_packs/JLinkSett
 
 # Segger RTT #
 RTT*
+
+# Project files #
+nRF5_SDK_11.0.0_89a8197/examples/peripheral/rtc/pca10040/arm5_no_packs/rtc_pca10040.uvguix.haho
 
 # commit_msg #
 commit_msg.txt
