@@ -242,11 +242,11 @@ void get_number_of_steps(void)
 
 void get_temperature(void)
 {
+    uint32_t temp;
     /* Allow interrupts to fire in equal interrupt priority ISR's */
     scb_scr = SCB->SCR;
     SCB->SCR = scb_scr | SCB_SCR_SEVONPEND_Msk;
 
-	uint32_t temp;
     NRF_TEMP->EVENTS_DATARDY = 0;
     NVIC_ClearPendingIRQ(TEMP_IRQn);
     NRF_TEMP->INTENSET = 1;
@@ -383,7 +383,7 @@ void lpcomp_event_handler(nrf_lpcomp_event_t event){}
 lpcomp_events_handler_t p_lpcomp_event_handler = lpcomp_event_handler;
 /*********************************************************************************************/
 
-/************************************ Application handle**************************************/
+/************************************ Application handler**************************************/
 static void application_handler(void)
 {
     hal_radio_reset();

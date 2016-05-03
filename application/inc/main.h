@@ -48,9 +48,9 @@
 #define HFXO_STARTUP_TIME_US    (400)
 #define INTERVAL_US				(1000000)
 
-#if INITIAL_TIMEOUT - LFCLK_STARTUP_TIME_US < 400
-#error "Initial timeout too short!"
-#endif
+// #if INITIAL_TIMEOUT - LFCLK_STARTUP_TIME_US < 400
+// #error "Initial timeout too short!"
+// #endif
 /*******************************************************************************/
 
 /******************************** Variables ************************************/
