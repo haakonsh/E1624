@@ -32,11 +32,11 @@
 #define ADXL362_FIFO_SIZE     	260    	// # samples in ADXL fifo, 0-511
 #define ADXL362_FIFO_TEMP     	0      	// 0: skip temp read 1: store temp in fifo
 #define ADXL362_ACT_RefAbs    	1      	// 0: absolute 1: reference
-#define ADXL362_ACT_THRESH    	50   	// 11 bit unsigned int
+#define ADXL362_ACT_THRESH    	100   	// 11 bit unsigned int
 #define ADXL362_ACT_TIME      	1		// (# of seconds * Hz)
 #define ADXL362_INACT_RefAbs  	1      	// 0: absolute 1: reference
-#define ADXL362_INACT_THRESH  	20   	// 11 bit unsigned int
-#define ADXL362_INACT_TIME    	1     	// (# of seconds * Hz)
+#define ADXL362_INACT_THRESH  	50   	// 11 bit unsigned int
+#define ADXL362_INACT_TIME    	3     	// (# of seconds * Hz)
 #define ADXL362_ODR           	ADXL362_ODR_12_5_HZ  // Output data rate
 /******************************************************************************/
 

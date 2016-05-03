@@ -72,6 +72,7 @@ nrf_ppi_channel_t ppi_channel2;
 bool volatile radio_isr_called;
 uint32_t time_us;
 uint32_t interval_us = 1000000;
+volatile uint32_t scb_scr;
 /************************************************************************************************/
 
 /*************************************** Instantiations *****************************************/
@@ -260,8 +261,12 @@ void get_number_of_steps(void)
     adv_pdu[STEPS_OFFS + 0] = (steps >> 8);
 }
 
-void temperature_measurement(void)
+void get_temperature(void)
 {
+    /* Allow interrupts to fire in equal interrupt priority ISR's */
+    scb_scr = SCB->SCR;
+    SCB->SCR = scb_scr | SCB_SCR_SEVONPEND_Msk;
+
 	uint32_t temp;
     NRF_TEMP->EVENTS_DATARDY = 0;
     NVIC_ClearPendingIRQ(TEMP_IRQn);
@@ -281,6 +286,9 @@ void temperature_measurement(void)
 	adv_pdu[TEMP_OFFS + 1] = (temp >> 8);
 	adv_pdu[TEMP_OFFS + 2] = (temp >> 16);
 	adv_pdu[TEMP_OFFS + 3] = (temp >> 24);
+
+    /* Prevent interrupts to fire in equal interrupt priority ISR's */
+    SCB->SCR &= ~SCB_SCR_SEVONPEND_Msk;
 }
 
 void ADXL362_motiondetect_cfg(void)
@@ -375,7 +383,7 @@ void gpiote_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
     {
         NRF_RTC0->TASKS_STOP;
     }
-    else
+    else if((get_int_pin_status() % 2 ) != 0)
     {
         NRF_RTC0->TASKS_START;
     }
@@ -419,7 +427,7 @@ static void application_handler(void)
         rtc_delay_ms(time_us);
 
 		/* Read temperature and put it into tx buffer */
-		//temperature_measurement();
+		get_temperature();
 
         send_one_packet(37);
         send_one_packet(38);
@@ -435,9 +443,7 @@ static void application_handler(void)
 /*********************************************************************************************/
 int main(void)
 {
-	uint32_t scb_scr;
-
-	ppi_init();
+		ppi_init();
 
 	APP_ERROR_CHECK(nrf_drv_timer_init(&timer0, &timer_config, timer_event_handler));
     APP_ERROR_CHECK(nrf_drv_timer_init(&timer1, &timer_config, timer_event_handler));
@@ -462,13 +468,6 @@ int main(void)
 	(void)hal_spi_open(HAL_SPI_ID_SPI0, &hal_spi_cfg);
 	ADXL362_motiondetect_cfg();
 	(void)hal_spi_close(HAL_SPI_ID_SPI0);
-
-	/* Allow interrupts to fire in equal interrupt priority ISR's */
-	scb_scr = SCB->SCR;
-	SCB->SCR = scb_scr | SCB_SCR_SEVONPEND_Msk;
-
-	/* Prevent interrupts to fire in equal interrupt priority ISR's */
-	//SCB->SCR &= ~SCB_SCR_SEVONPEND_Msk;
 
 	gpiote_init();
 
