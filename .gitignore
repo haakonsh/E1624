@@ -39,6 +39,9 @@ Thumbs.db
 # Files for current project #
 #############################
 
+# Application #
+application/src/spi_and_gpiote.c
+
 # Drivers #
 nRF5_SDK_11.0.0_89a8197/components/drivers_nrf/clock*
 nRF5_SDK_11.0.0_89a8197/components/drivers_nrf/gpiote*
