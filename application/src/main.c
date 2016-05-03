@@ -391,7 +391,7 @@ static void application_handler(void)
 
     uicr_bd_addr_set();
 
-    time_us = INITIAL_TIMEOUT - LFCLK_STARTUP_TIME_US;
+    time_us = INITIAL_TIMEOUT;
 
     do
     {
@@ -406,7 +406,7 @@ static void application_handler(void)
 
         hal_clock_hfclk_enable();
 
-        time_us = LFCLK_STARTUP_TIME_US;
+        time_us = HFXO_STARTUP_TIME_US;
         rtc_delay_us(time_us);
 
 		/* Read temperature and put it into tx buffer */
@@ -418,7 +418,7 @@ static void application_handler(void)
 
         hal_clock_hfclk_disable();
 
-        time_us = INTERVAL_US - LFCLK_STARTUP_TIME_US;
+        time_us = INTERVAL_US - HFXO_STARTUP_TIME_US;
     } while ( 1 );
 }
 /*********************************************************************************************/

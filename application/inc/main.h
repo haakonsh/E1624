@@ -44,8 +44,8 @@
 #define BD_ADDR_OFFS			3
 #define TEMP_OFFS				16
 #define STEPS_OFFS				22
-#define INITIAL_TIMEOUT         (2000)
-#define LFCLK_STARTUP_TIME_US   (1600)
+#define INITIAL_TIMEOUT         (400)
+#define HFXO_STARTUP_TIME_US    (400)
 #define INTERVAL_US				(1000000)
 
 #if INITIAL_TIMEOUT - LFCLK_STARTUP_TIME_US < 400
