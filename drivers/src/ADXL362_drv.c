@@ -54,8 +54,6 @@
 #include "nordic_common.h"
 #include "nrf_drv_common.h"
 #include "nrf51_to_nrf52.h"
-#include "nrf_drv_spi.h"
-
 
 /******************************************************************************/
 /************************* Variables Declarations *****************************/
@@ -73,9 +71,6 @@ char selectedRange = 0;
  * @return  NRF_SUCCESS - the initialization was successful and the device is present;
  *         INVALID_PARID - an error occurred.
 *******************************************************************************/
-//TODO Skriv utfyldende kommentarer.
-//TODO Gå igjennom kode. Let etter feil, eks. 'skrive/lese feil register' og evalueringer.
-
 uint32_t ADXL362_BUFFER_LENGTH = 0;
 
 void ADXL362_Init(void)
@@ -130,11 +125,6 @@ void ADXL362_SetRegisterValue(uint16_t registerValue,
     ADXL362_BUFFER_LENGTH = 2 + bytesNumber;
 
     NRF_GPIO->OUTCLR = (1 << 15); //SS
-    /*APP_ERROR_CHECK(nrf_drv_spi_transfer(&SPIM0,
-                                        ADXL362_TX_BUFFER,
-                                        ADXL362_BUFFER_LENGTH,
-                                        ADXL362_RX_BUFFER,
-                                        ADXL362_BUFFER_LENGTH ));*/
     (void)hal_spi_trx(  HAL_SPI_ID_SPI0,
                         ADXL362_BUFFER_LENGTH,
                         &(ADXL362_TX_BUFFER[0]),
@@ -167,11 +157,6 @@ void ADXL362_GetRegisterValue(uint8_t  registerAddress,
     ADXL362_BUFFER_LENGTH = 2 + bytesNumber;
 
     NRF_GPIO->OUTCLR = (1 << 15); //SS
-    /*APP_ERROR_CHECK(nrf_drv_spi_transfer(&SPIM0,
-                                        ADXL362_TX_BUFFER,
-                                        ADXL362_BUFFER_LENGTH,
-                                        ADXL362_RX_BUFFER,
-                                        ADXL362_BUFFER_LENGTH ));*/
     (void)hal_spi_trx(  HAL_SPI_ID_SPI0,
                         ADXL362_BUFFER_LENGTH,
                         &(ADXL362_TX_BUFFER[0]),
