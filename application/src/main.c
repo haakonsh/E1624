@@ -67,7 +67,6 @@ static uint8_t adv_pdu[36 + 3] =
 volatile uint32_t Counter = 0;
 bool volatile timer_evt_called = false;
 nrf_ppi_channel_t ppi_channel1;
-nrf_ppi_channel_t ppi_channel2;
 
 bool volatile radio_isr_called;
 uint32_t time_us;
@@ -77,7 +76,6 @@ volatile uint32_t scb_scr;
 
 /*************************************** Instantiations *****************************************/
 const nrf_drv_timer_t timer0 	= NRF_DRV_TIMER_INSTANCE(0);
-const nrf_drv_timer_t timer1 	= NRF_DRV_TIMER_INSTANCE(1);
 const nrf_drv_rtc_t rtc 		= NRF_DRV_RTC_INSTANCE(0);
 /************************************************************************************************/
 
@@ -139,15 +137,6 @@ static void ppi_init(void)
 
     /* Enable the configured PPI channel */
     APP_ERROR_CHECK(nrf_drv_ppi_channel_enable(ppi_channel1));
-
-    /* Configure 1st available PPI channel to increment timer1 on pin change */
-    APP_ERROR_CHECK(nrf_drv_ppi_channel_alloc(&ppi_channel2));
-    APP_ERROR_CHECK(nrf_drv_ppi_channel_assign(ppi_channel2,
-                                         nrf_drv_gpiote_in_event_addr_get(ADXL362_INT_PIN),
-                                         nrf_drv_timer_task_address_get(&timer1, NRF_TIMER_TASK_COUNT)));
-
-    /* Enable the configured PPI channel */
-    APP_ERROR_CHECK(nrf_drv_ppi_channel_enable(ppi_channel2));
 }
 
 /* Function starting the internal LFCLK XTAL oscillator */
@@ -242,13 +231,6 @@ void rtc_delay_ms(uint32_t timeout_us){
 	while(!timer_evt_called);
     /* Stop the RTC */
 	nrf_drv_rtc_disable(&rtc);
-}
-
-uint16_t get_int_pin_status(void)
-{
-    /* Read value of time1 and determine which state int_pin has */
-    nrf_timer_task_trigger(NRF_TIMER1, NRF_TIMER_TASK_CAPTURE1);
-    return nrf_drv_timer_capture_get(&timer1, NRF_TIMER_CC_CHANNEL1);
 }
 
 void get_number_of_steps(void)
@@ -376,17 +358,15 @@ void RADIO_IRQHandler(void)
 
 void gpiote_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
 {
-    // uint counter = get_int_pin_status();
-
-    // check if counter is an even number
-    if((get_int_pin_status() % 2 ) == 0)
-    {
-        NRF_RTC0->TASKS_STOP;
-    }
-    else if((get_int_pin_status() % 2 ) != 0)
-    {
-        NRF_RTC0->TASKS_START;
-    }
+    nrf_gpio_pin_sense_t sense = nrf_gpio_pin_sense_get(ADXL362_INT_PIN);
+	if(sense == NRF_GPIO_PIN_SENSE_HIGH)
+	{
+		NRF_RTC0->TASKS_STOP = 1;
+	}
+	else if (sense == NRF_GPIO_PIN_SENSE_LOW)
+	{
+		NRF_RTC0->TASKS_START = 1;
+	}
 }
 
 static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
@@ -443,10 +423,9 @@ static void application_handler(void)
 /*********************************************************************************************/
 int main(void)
 {
-		ppi_init();
+	ppi_init();
 
 	APP_ERROR_CHECK(nrf_drv_timer_init(&timer0, &timer_config, timer_event_handler));
-    APP_ERROR_CHECK(nrf_drv_timer_init(&timer1, &timer_config, timer_event_handler));
 
 	APP_ERROR_CHECK(nrf_drv_lpcomp_init(&lpcomp_config, lpcomp_event_handler));
 	NRF_LPCOMP->HYST = COMP_HYST_HYST_Hyst50mV;
