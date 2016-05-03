@@ -46,6 +46,7 @@
 #define STEPS_OFFS				22
 #define INITIAL_TIMEOUT         (2000)
 #define LFCLK_STARTUP_TIME_US   (1600)
+#define INTERVAL_US				(1000000)
 
 #if INITIAL_TIMEOUT - LFCLK_STARTUP_TIME_US < 400
 #error "Initial timeout too short!"

@@ -70,7 +70,6 @@ nrf_ppi_channel_t ppi_channel1;
 
 bool volatile radio_isr_called;
 uint32_t time_us;
-uint32_t interval_us = 1000000;
 volatile uint32_t scb_scr;
 /************************************************************************************************/
 
@@ -182,8 +181,6 @@ void gpiote_init(void)
 	APP_ERROR_CHECK(nrf_drv_gpiote_in_init(ADXL362_INT_PIN,
 	                             &ADXL362_int_pin_cfg,
 	                             gpiote_handler));
-	/* Eneable toggle event and interrupt on pin */
-	nrf_drv_gpiote_in_event_enable(ADXL362_INT_PIN, false);
 }
 /************************************************************************************************/
 
@@ -207,7 +204,7 @@ void rtc_delay(uint32_t time_delay){
     /* Stop the RTC */
 	nrf_drv_rtc_disable(&rtc);
 }
-void rtc_delay_ms(uint32_t timeout_us){
+void rtc_delay_us(uint32_t timeout_us){
     timer_evt_called = false;
 	uint32_t rtc_units;
     uint32_t us_units;
@@ -215,7 +212,7 @@ void rtc_delay_ms(uint32_t timeout_us){
     m_convert(timeout_us, &rtc_units, &us_units);
     (void)us_units;
 
-    /* Set compare channel to trigger interrupt after COMPARE_COUNTERTIME seconds */
+    /* Set compare channel to trigger interrupt after COMPARE_COUNTERTIME */
     APP_ERROR_CHECK(nrf_drv_rtc_cc_set(&rtc,0,rtc_units,true));
     /* Reset the COUNTER register */
     nrf_drv_rtc_counter_clear(&rtc);
@@ -358,6 +355,9 @@ void RADIO_IRQHandler(void)
 
 void gpiote_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
 {
+    // The driver toggles pin sense before the handler is called. A NRF_GPIO_PIN_SENSE_HIGH
+    // means the gpiote triggered a port event on a sense low-to-high.
+
     nrf_gpio_pin_sense_t sense = nrf_gpio_pin_sense_get(ADXL362_INT_PIN);
 	if(sense == NRF_GPIO_PIN_SENSE_HIGH)
 	{
@@ -395,8 +395,11 @@ static void application_handler(void)
 
     do
     {
-        rtc_delay_ms(time_us);
-        /* Disable gpiote from executing ADXL362_int_pin_event_handler(); */
+        /* Enable gpiote from executing gpiote_handler(); */
+        nrf_drv_gpiote_in_event_enable(ADXL362_INT_PIN, false);
+
+        rtc_delay_us(time_us);
+        /* Disable gpiote from executing gpiote_handler(); */
         nrf_drv_gpiote_in_event_disable(ADXL362_INT_PIN);
 
         get_number_of_steps();
@@ -404,7 +407,7 @@ static void application_handler(void)
         hal_clock_hfclk_enable();
 
         time_us = LFCLK_STARTUP_TIME_US;
-        rtc_delay_ms(time_us);
+        rtc_delay_us(time_us);
 
 		/* Read temperature and put it into tx buffer */
 		get_temperature();
@@ -415,9 +418,7 @@ static void application_handler(void)
 
         hal_clock_hfclk_disable();
 
-        time_us = interval_us - LFCLK_STARTUP_TIME_US;
-        /* Enable gpiote from executing ADXL362_int_pin_event_handler(); */
-        nrf_drv_gpiote_in_event_enable(ADXL362_INT_PIN, false);
+        time_us = INTERVAL_US - LFCLK_STARTUP_TIME_US;
     } while ( 1 );
 }
 /*********************************************************************************************/
