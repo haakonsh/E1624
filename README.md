@@ -12,17 +12,18 @@ The radio and spi are controlled with proprietary lightweight drivers included i
 
 Project should compile with one warning if extracted correctly into the [nRF5_SDK_v11.x.x](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v11.x.x/) SDK
 
-Made by Håkon S. Holdhus and Lars J. Hammervold, with help from Hans Elfberg at Nordic Semiconductor.
+
 
 ---------
-Flow chart
+Flow chart:
 ----------
-
-![enter image description here](http://i.imgur.com/rDcb0jl.png)
-
-
+![Flow chart](http://i.imgur.com/0QBc4jC.png)
 ----------
 
 
+----------
+
+
+###Made by Håkon S. Holdhus and Lars J. Hammervold, with help from Hans Elfberg at Nordic Semiconductor.
 ![Nordic logo](https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Nordic_Semiconductor.svg/2000px-Nordic_Semiconductor.svg.png)
 
