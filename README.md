@@ -14,5 +14,15 @@ Project should compile with one warning if extracted correctly into the [nRF5_SD
 
 Made by Håkon S. Holdhus and Lars J. Hammervold, with help from Hans Elfberg at Nordic Semiconductor.
 
+---------
+Flow chart
+----------
+
+![enter image description here](http://i.imgur.com/rDcb0jl.png)
+
+
+----------
+
+
 ![Nordic logo](https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Nordic_Semiconductor.svg/2000px-Nordic_Semiconductor.svg.png)
 
