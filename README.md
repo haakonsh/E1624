@@ -14,7 +14,6 @@ Project should compile with one warning if extracted correctly into the [nRF5_SD
 
 
 
----------
 Flow chart:
 ----------
 ![Flow chart](http://i.imgur.com/CEbscQP.png)
