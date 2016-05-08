@@ -8,7 +8,7 @@ This repo contains the firmware for nRF52. It's an ultra low power BLE stepcount
 
 The BLE protocol is not fully implemented. At this point the Bluetooth Low Energy(BLE) Payload Data Unit(PDU) is not conforming to any protocol. It's just sending out indirect advertising packets. The reason is the high current consumption of the SoftDevice's boot sequence, and that of a BLE connection event (listening for packets is very expensive). In the future, some protocols (Eddystone etc.) may support indirect advertising without a connection.
 
-The radio and spi are controlled with proprietary lightweight drivers included in the repo, however the spi could easily run from the SDK driver.
+The radio and spi are controlled with lightweight drivers included in the repo, however the spi could easily run from the SDK driver.
 
 Project should compile with one warning if extracted correctly into the [nRF5_SDK_v11.x.x](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v11.x.x/) SDK
 
