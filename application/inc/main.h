@@ -27,8 +27,8 @@
 
 /********************************** ADXL362 ***********************************/
 #define ADXL_ORC         	    0xFF   	// OverReadCharacter
-#define CHIP_RESET_TIME  		1000	// timeout in multiples of ~30uS, 1000
-#define STARTUP_TIME  			15		// timeout in multiples of ~30uS
+#define CHIP_RESET_TIME  		2000	// timeout in multiples of ~30uS, (1000)
+#define STARTUP_TIME  			500		// timeout in multiples of ~30uS  (15)
 #define ADXL362_FIFO_SIZE     	260    	// # samples in ADXL fifo, 0-511
 #define ADXL362_FIFO_TEMP     	0      	// 0: skip temp read 1: store temp in fifo
 #define ADXL362_ACT_RefAbs    	1      	// 0: absolute 1: reference
@@ -44,13 +44,13 @@
 #define BD_ADDR_OFFS			3
 #define TEMP_OFFS				16
 #define STEPS_OFFS				18
-#define INITIAL_TIMEOUT         (400)  //TODO: Increase timout because of the high current drawn from decoupling capacitors during boot
-#define HFXO_STARTUP_TIME_US    (400)
-#define INTERVAL_US				(1000000)
+#define INITIAL_TIMEOUT         500
+#define HFXO_STARTUP_TIME_US    400
+#define INTERVAL_US				1000000
+/*******************************************************************************/
 
-// #if INITIAL_TIMEOUT - LFCLK_STARTUP_TIME_US < 400
-// #error "Initial timeout too short!"
-// #endif
+/******************************** Misc ************************************/
+#define CHARGING_INTERVAL		3000000
 /*******************************************************************************/
 
 /******************************** Variables ************************************/
@@ -67,4 +67,5 @@ static void rtc_handler(nrf_drv_rtc_int_type_t int_type);
 void gpiote_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action);
 void timer_event_handler1(nrf_timer_event_t event_type, void * p_context);
 void timer_event_handler2(nrf_timer_event_t event_type, void * p_context);
+void rtc_delay_us(uint32_t timeout_us);
 /*******************************************************************************/

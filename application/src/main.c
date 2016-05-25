@@ -151,23 +151,20 @@ void rtc_init(void)
 	/* Start the internal LFCLK XTAL oscillator */
     lfclk_config();
     /* Initialize RTC driver */
-    APP_ERROR_CHECK(nrf_drv_rtc_init(&rtc, NULL, rtc_handler));
+    APP_ERROR_CHECK(nrf_drv_rtc_init(&rtc, &RTC_cfg, rtc_handler));
     /* Enable tick event & interrupt */
-    nrf_drv_rtc_tick_enable(&rtc,true);
+    nrf_drv_rtc_tick_enable(&rtc,false);
 }
 
 void ADXL362_init(void)
 {
-	/* Initialize RTC */
-    rtc_init();
-
     /* Drain decoupling capacitors */
     NRF_GPIO->OUTCLR = (1 << VDD_PIN);
     NRF_GPIO->DIRSET = (1 << VDD_PIN);
-	rtc_delay(CHIP_RESET_TIME);
+	rtc_delay_us(CHIP_RESET_TIME);
 	/* Power up ADXL362 */
 	NRF_GPIO->OUTSET = (1 << VDD_PIN);
-	rtc_delay(STARTUP_TIME);
+	rtc_delay_us(STARTUP_TIME);
 }
 
 void gpiote_init(void)
@@ -295,7 +292,7 @@ void ADXL362_motiondetect_cfg(void)
 	ADXL362_SetupINTMAP1(ADXL362_INTMAP1_AWAKE);
 
 	/*! Configure the INTMAP2. */
-	ADXL362_SetupINTMAP2(ADXL362_INTMAP2_AWAKE);
+	//ADXL362_SetupINTMAP2(ADXL362_INTMAP2_AWAKE);
 
 	/*! Configure the measurement range. */
 	ADXL362_SetRange(ADXL362_RANGE_2G);
@@ -430,6 +427,11 @@ int main(void)
 	APP_ERROR_CHECK(nrf_drv_lpcomp_init(&lpcomp_config, lpcomp_event_handler));
 	NRF_LPCOMP->HYST = COMP_HYST_HYST_Hyst50mV;
 	nrf_drv_lpcomp_enable();
+
+	/* Initialize RTC */
+    rtc_init();
+	/* Sleep until next charging cycle is complete */
+	//rtc_delay_us(CHARGING_INTERVAL);
 
 	/* Set interrupt pin pull */
 	//ADXL362_int_pin_cfg.pull = NRF_GPIO_PIN_PULLDOWN;   //Interrupt is active high
