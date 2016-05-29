@@ -123,6 +123,43 @@ nrf_drv_gpiote_in_config_t ADXL362_int_pin_cfg = GPIOTE_CONFIG_IN_SENSE_TOGGLE(f
 /************************************************************************************************/
 
 /*************************************** Intitializations ***************************************/
+void gpio_init(void){
+    nrf_gpio_cfg	(	VDD_PIN,
+                        NRF_GPIO_PIN_DIR_OUTPUT,
+                        NRF_GPIO_PIN_INPUT_DISCONNECT,
+                        NRF_GPIO_PIN_NOPULL,
+                        NRF_GPIO_PIN_H0H1,
+                        NRF_GPIO_PIN_NOSENSE
+                    );
+    nrf_gpio_cfg	(	SS_PIN,
+                        NRF_GPIO_PIN_DIR_OUTPUT,
+                        NRF_GPIO_PIN_INPUT_DISCONNECT,
+                        NRF_GPIO_PIN_NOPULL,
+                        NRF_GPIO_PIN_H0H1,
+                        NRF_GPIO_PIN_NOSENSE
+                    );
+    nrf_gpio_cfg	(	MISO_PIN,
+                        NRF_GPIO_PIN_DIR_INPUT,
+                        NRF_GPIO_PIN_INPUT_CONNECT,
+                        NRF_GPIO_PIN_NOPULL,
+                        NRF_GPIO_PIN_H0H1,
+                        NRF_GPIO_PIN_NOSENSE
+                    );
+    nrf_gpio_cfg	(	MOSI_PIN,
+                        NRF_GPIO_PIN_DIR_OUTPUT,
+                        NRF_GPIO_PIN_INPUT_DISCONNECT,
+                        NRF_GPIO_PIN_NOPULL,
+                        NRF_GPIO_PIN_H0H1,
+                        NRF_GPIO_PIN_NOSENSE
+                    );
+    nrf_gpio_cfg	(	SCK_PIN,
+                        NRF_GPIO_PIN_DIR_OUTPUT,
+                        NRF_GPIO_PIN_INPUT_DISCONNECT,
+                        NRF_GPIO_PIN_NOPULL,
+                        NRF_GPIO_PIN_H0H1,
+                        NRF_GPIO_PIN_NOSENSE
+                    );
+}
 static void ppi_init(void)
 {
 	/* Initialize ppi */
@@ -420,6 +457,7 @@ static void application_handler(void)
 /*********************************************************************************************/
 int main(void)
 {
+    gpio_init();
 	ppi_init();
 
 	APP_ERROR_CHECK(nrf_drv_timer_init(&timer0, &timer_config, timer_event_handler));
