@@ -16,14 +16,14 @@
 /* Event adress get function does not work */
 #define NRF_LPCOMP_EVENT_UP_address 0x40013108UL
 /********************************** Pin map **********************************/
-#define VDD_PIN					11
-#define SS_PIN				  	12
-#define MISO_PIN			  	13
-#define MOSI_PIN			  	14
-#define SCK_PIN				  	15
-#define ADXL362_INT_PIN 		16
+#define VDD_PIN					8
+#define SS_PIN				  	3
+#define MISO_PIN			  	4
+#define MOSI_PIN			  	6
+#define SCK_PIN				  	7
+#define ADXL362_INT_PIN 		2
 
-#define LPCOMP_PIN				NRF_LPCOMP_INPUT_3
+#define LPCOMP_PIN				NRF_LPCOMP_INPUT_3	//AIN3 (P0.05)
 /******************************************************************************/
 
 /********************************** ADXL362 ***********************************/
