@@ -124,12 +124,12 @@ void ADXL362_SetRegisterValue(uint16_t registerValue,
 
     ADXL362_BUFFER_LENGTH = 2 + bytesNumber;
 
-    NRF_GPIO->OUTCLR = (1 << 15); //SS
+    NRF_GPIO->OUTCLR = (1 << SS_PIN); //SS
     (void)hal_spi_trx(  HAL_SPI_ID_SPI0,
                         ADXL362_BUFFER_LENGTH,
                         &(ADXL362_TX_BUFFER[0]),
                         &(ADXL362_RX_BUFFER[0]));
-    NRF_GPIO->OUTSET = (1 << 15); //SS
+    NRF_GPIO->OUTSET = (1 << SS_PIN); //SS
 
 }
 
@@ -156,12 +156,12 @@ void ADXL362_GetRegisterValue(uint8_t  registerAddress,
 
     ADXL362_BUFFER_LENGTH = 2 + bytesNumber;
 
-    NRF_GPIO->OUTCLR = (1 << 15); //SS
+    NRF_GPIO->OUTCLR = (1 << SS_PIN); //SS
     (void)hal_spi_trx(  HAL_SPI_ID_SPI0,
                         ADXL362_BUFFER_LENGTH,
                         &(ADXL362_TX_BUFFER[0]),
                         &(ADXL362_RX_BUFFER[0]));
-    NRF_GPIO->OUTSET = (1 << 15); //SS
+    NRF_GPIO->OUTSET = (1 << SS_PIN); //SS
 
 }
 
@@ -179,12 +179,12 @@ void ADXL362_GetFifoValue(uint16_t bytesNumber)
     ADXL362_TX_BUFFER[0] = ADXL362_WRITE_FIFO;
     ADXL362_BUFFER_LENGTH = 1 + bytesNumber;
 
-    NRF_GPIO->OUTCLR = (1 << 15); //SS
+    NRF_GPIO->OUTCLR = (1 << SS_PIN); //SS
     (void)hal_spi_trx(  HAL_SPI_ID_SPI0,
                         ADXL362_BUFFER_LENGTH,
                         &(ADXL362_TX_BUFFER[0]),
                         &(ADXL362_RX_BUFFER[0]));
-    NRF_GPIO->OUTSET = (1 << 15); //SS
+    NRF_GPIO->OUTSET = (1 << SS_PIN); //SS
 }
 
 /***************************************************************************//**
