@@ -11,15 +11,15 @@
  */
 
 /* ************************************************************************** *
- * This file is an application which purpose is to count steps and advertise  *
+ * This file is an application whose purpose is to count steps and advertise  *
  * it with the BLE radio. It uses timer0 to track the number of times lpcomp  *
- * triggers an event, using ppi. It also utilizes an ADXL362 accellerometer   *
- * to detect motion, and put the nRF52 to sleep in the abcense of it. The     *
+ * sets an event via ppi. It also utilizes an ADXL362 accellerometer          *
+ * to detect motion, and put the nRF52 to sleep in the absence of it. The     *
  * ADXL362 is programmed via a proprietary spi driver made by Hans Elfberg.   *
  * The ADXL362_drv was made by Analog Devices, ported to nRF52 and expanded   *
  * with debugging tools. BLE advertisement is done via a proprietary radio	  *
  * driver also made by Hans Elfberg.										  *
- * Made by Håkon S.Holdhus and Lars J. Hammervold							  *
+ * Made by Håkon S.Holdhus							                          *
  * ************************************************************************** */
 
 #include <stdbool.h>
@@ -88,7 +88,7 @@ const nrf_drv_timer_config_t timer_config = {
 };
 
 nrf_drv_lpcomp_config_t lpcomp_config = {
-	.hal                = {.reference = NRF_LPCOMP_REF_SUPPLY_3_8, .detection = NRF_LPCOMP_DETECT_UP},
+	.hal                = {.reference = NRF_LPCOMP_CONFIG_REF_EXT_REF1, .detection = NRF_LPCOMP_DETECT_UP},
 	.input              = NRF_LPCOMP_INPUT_3,
 	.interrupt_priority = LPCOMP_CONFIG_IRQ_PRIORITY
 };
@@ -142,7 +142,7 @@ void gpio_init(void){
                         NRF_GPIO_PIN_DIR_INPUT,
                         NRF_GPIO_PIN_INPUT_CONNECT,
                         NRF_GPIO_PIN_NOPULL,
-                        NRF_GPIO_PIN_H0H1,
+                        NRF_GPIO_PIN_S0S1,
                         NRF_GPIO_PIN_NOSENSE
                     );
     nrf_gpio_cfg	(	MOSI_PIN,
@@ -159,7 +159,22 @@ void gpio_init(void){
                         NRF_GPIO_PIN_H0H1,
                         NRF_GPIO_PIN_NOSENSE
                     );
+    // nrf_gpio_cfg	(	DEBUG_PIN,
+    //                     NRF_GPIO_PIN_DIR_OUTPUT,
+    //                     NRF_GPIO_PIN_INPUT_DISCONNECT,
+    //                     NRF_GPIO_PIN_NOPULL,
+    //                     NRF_GPIO_PIN_H0H1,
+    //                     NRF_GPIO_PIN_NOSENSE
+    //                 );
 }
+
+void gpio_reset_programming_pins(void){
+    nrf_gpio_cfg_default(SS_PIN);
+    nrf_gpio_cfg_default(MISO_PIN);
+    nrf_gpio_cfg_default(MOSI_PIN);
+    nrf_gpio_cfg_default(SCK_PIN);
+}
+
 static void ppi_init(void)
 {
 	/* Initialize ppi */
@@ -178,9 +193,32 @@ static void ppi_init(void)
 /* Function starting the internal LFCLK XTAL oscillator */
 static void lfclk_config(void)
 {
-    ret_code_t err_code = nrf_drv_clock_init();
-    APP_ERROR_CHECK(err_code);
-    nrf_drv_clock_lfclk_request(NULL);
+        /* Allow interrupts to fire in equal interrupt priority ISR's */
+    scb_scr = SCB->SCR;
+    SCB->SCR = scb_scr | SCB_SCR_SEVONPEND_Msk;
+
+    /* Start LFCLK (32kHz) crystal oscillator. If you don't have crystal on your board, choose RCOSC instead */
+    NRF_CLOCK->LFCLKSRC = ((CLOCK_CONFIG_LF_SRC << CLOCK_LFCLKSRC_SRC_Pos) & CLOCK_LFCLKSRC_SRC_Msk);
+    NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;
+
+    NVIC_ClearPendingIRQ(POWER_CLOCK_IRQn);
+
+    nrf_clock_int_enable(NRF_CLOCK_INT_LF_STARTED_MASK);
+    NRF_CLOCK->INTENSET = 1;
+
+    NRF_CLOCK->TASKS_LFCLKSTART = 1;
+
+    while (!NRF_CLOCK->EVENTS_LFCLKSTARTED)
+    {
+        __WFE();
+        __SEV();
+        __WFE();
+    }
+
+    NRF_CLOCK->INTENCLR = 1;
+
+    /* Prevent interrupts to fire in equal interrupt priority ISR's */
+    SCB->SCR &= ~SCB_SCR_SEVONPEND_Msk;
 }
 
 void rtc_init(void)
@@ -189,15 +227,13 @@ void rtc_init(void)
     lfclk_config();
     /* Initialize RTC driver */
     APP_ERROR_CHECK(nrf_drv_rtc_init(&rtc, &RTC_cfg, rtc_handler));
-    /* Enable tick event & interrupt */
-    nrf_drv_rtc_tick_enable(&rtc,false);
 }
 
 void ADXL362_init(void)
 {
     /* Drain decoupling capacitors */
-    NRF_GPIO->OUTCLR = (1 << VDD_PIN);
     NRF_GPIO->DIRSET = (1 << VDD_PIN);
+    NRF_GPIO->OUTCLR = (1 << VDD_PIN);
 	rtc_delay_us(CHIP_RESET_TIME);
 	/* Power up ADXL362 */
 	NRF_GPIO->OUTSET = (1 << VDD_PIN);
@@ -219,25 +255,7 @@ void gpiote_init(void)
 /************************************************************************************************/
 
 /************************************** Utility functions ***************************************/
-void rtc_delay(uint32_t time_delay){
-    timer_evt_called = false;
-    /* Set compare channel to trigger interrupt after COMPARE_COUNTERTIME seconds */
-    APP_ERROR_CHECK(nrf_drv_rtc_cc_set(&rtc,0,time_delay,true));
-    /* Reset the COUNTER register */
-    nrf_drv_rtc_counter_clear(&rtc);
-    /* Power on RTC instance */
-    nrf_drv_rtc_enable(&rtc);
-    /* Check to block application program execution */
-    do
-    {
-		__WFE();
-		__SEV();
-        __WFE();
-    }
-	while(!timer_evt_called);
-    /* Stop the RTC */
-	nrf_drv_rtc_disable(&rtc);
-}
+
 void rtc_delay_us(uint32_t timeout_us){
     timer_evt_called = false;
 	uint32_t rtc_units;
@@ -246,7 +264,7 @@ void rtc_delay_us(uint32_t timeout_us){
     m_convert(timeout_us, &rtc_units, &us_units);
     (void)us_units;
 
-    /* Set compare channel to trigger interrupt after COMPARE_COUNTERTIME */
+    /* Set compare channel to Set interrupt after COMPARE_COUNTERTIME */
     APP_ERROR_CHECK(nrf_drv_rtc_cc_set(&rtc,0,rtc_units,true));
     /* Reset the COUNTER register */
     nrf_drv_rtc_counter_clear(&rtc);
@@ -389,15 +407,17 @@ void RADIO_IRQHandler(void)
 void gpiote_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
 {
     // The driver toggles pin sense before the handler is called. A NRF_GPIO_PIN_SENSE_HIGH
-    // means the gpiote triggered a port event on a sense low-to-high.
+    // means the gpiote Seted a port event on a sense low-to-high.
 
     nrf_gpio_pin_sense_t sense = nrf_gpio_pin_sense_get(ADXL362_INT_PIN);
 	if(sense == NRF_GPIO_PIN_SENSE_HIGH)
 	{
+        NRF_RTC0->TASKS_START = 0;
 		NRF_RTC0->TASKS_STOP = 1;
 	}
 	else if (sense == NRF_GPIO_PIN_SENSE_LOW)
 	{
+		NRF_RTC0->TASKS_STOP = 0;
 		NRF_RTC0->TASKS_START = 1;
 	}
 }
@@ -414,13 +434,12 @@ void timer_event_handler(nrf_timer_event_t event_type, void * p_context){}
 
 void lpcomp_event_handler(nrf_lpcomp_event_t event){}
 lpcomp_events_handler_t p_lpcomp_event_handler = lpcomp_event_handler;
-/*********************************************************************************************/
+/**********************************************************************************************/
 
 /************************************ Application handler**************************************/
 static void application_handler(void)
 {
     hal_radio_reset();
-    hal_timer_start();
 
     uicr_bd_addr_set();
 
@@ -457,7 +476,32 @@ static void application_handler(void)
 /*********************************************************************************************/
 int main(void)
 {
+    /* Use DC-DC regulator */
+    NRF_POWER->DCDCEN = 1;
+
+    /* Initialize RTC */
+    rtc_init();
+    /* Clear debug pin */
+    NRF_GPIO->OUTCLR = (1 << DEBUG_PIN);
+
+    /* configure programming pins as outputs with high drive strengths */
     gpio_init();
+    /* ADXL362 startup sequence */
+    ADXL362_init();
+
+    /* Initialize SS pin */
+    NRF_GPIO->OUTSET = (1 << SS_PIN);
+    NRF_GPIO->DIRSET = (1 << SS_PIN);
+
+    hal_serial_init(&serial_cfg);
+    hal_spi_init();
+
+    (void)hal_spi_open(HAL_SPI_ID_SPI0, &hal_spi_cfg);
+    ADXL362_motiondetect_cfg();
+    (void)hal_spi_close(HAL_SPI_ID_SPI0);
+
+    gpio_reset_programming_pins();
+
 	ppi_init();
 
 	APP_ERROR_CHECK(nrf_drv_timer_init(&timer0, &timer_config, timer_event_handler));
@@ -465,28 +509,6 @@ int main(void)
 	APP_ERROR_CHECK(nrf_drv_lpcomp_init(&lpcomp_config, lpcomp_event_handler));
 	NRF_LPCOMP->HYST = COMP_HYST_HYST_Hyst50mV;
 	nrf_drv_lpcomp_enable();
-
-	/* Initialize RTC */
-    rtc_init();
-	/* Sleep until next charging cycle is complete */
-	//rtc_delay_us(CHARGING_INTERVAL);
-
-	/* Set interrupt pin pull */
-	//ADXL362_int_pin_cfg.pull = NRF_GPIO_PIN_PULLDOWN;   //Interrupt is active high
-
-	/* ADXL362 startup sequence */
-	ADXL362_init();
-
-	/* Initialize SS pin */
-	NRF_GPIO->OUTSET = (1 << SS_PIN);
-	NRF_GPIO->DIRSET = (1 << SS_PIN);
-
-	hal_serial_init(&serial_cfg);
-	hal_spi_init();
-
-	(void)hal_spi_open(HAL_SPI_ID_SPI0, &hal_spi_cfg);
-	ADXL362_motiondetect_cfg();
-	(void)hal_spi_close(HAL_SPI_ID_SPI0);
 
 	gpiote_init();
 

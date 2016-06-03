@@ -130,7 +130,6 @@ void ADXL362_SetRegisterValue(uint16_t registerValue,
                         &(ADXL362_TX_BUFFER[0]),
                         &(ADXL362_RX_BUFFER[0]));
     NRF_GPIO->OUTSET = (1 << SS_PIN); //SS
-
 }
 
 /***************************************************************************//**
