@@ -407,7 +407,7 @@ void RADIO_IRQHandler(void)
 void gpiote_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
 {
     // The driver toggles pin sense before the handler is called. A NRF_GPIO_PIN_SENSE_HIGH
-    // means the gpiote Seted a port event on a sense low-to-high.
+    // means the gpiote triggered the port event on a sense low-to-high transition.
 
     nrf_gpio_pin_sense_t sense = nrf_gpio_pin_sense_get(ADXL362_INT_PIN);
 	if(sense == NRF_GPIO_PIN_SENSE_HIGH)
@@ -481,11 +481,10 @@ int main(void)
 
     /* Initialize RTC */
     rtc_init();
-    /* Clear debug pin */
-    NRF_GPIO->OUTCLR = (1 << DEBUG_PIN);
 
     /* configure programming pins as outputs with high drive strengths */
     gpio_init();
+
     /* ADXL362 startup sequence */
     ADXL362_init();
 
