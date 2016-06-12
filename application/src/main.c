@@ -310,10 +310,12 @@ void get_temperature(void)
 		__SEV();
 		__WFE();
 	}
-    NRF_TEMP->TASKS_STOP = 1;
     NRF_TEMP->INTENCLR = 1;
 
     temp_32 = (NRF_TEMP->TEMP / 4);
+
+    NRF_TEMP->TASKS_STOP = 1;
+
     temp = (temp_32 >> 24) | (temp_32 & 0x000000FF);
 	adv_pdu[TEMP_OFFS] = temp;
 

@@ -49,7 +49,7 @@
 #define STEPS_OFFS				18
 #define INITIAL_TIMEOUT         500
 #define HFXO_STARTUP_TIME_US    400
-#define INTERVAL_US				1000000
+#define INTERVAL_US				2000000
 /*******************************************************************************/
 
 /********************************** Misc ***************************************/
