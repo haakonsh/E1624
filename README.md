@@ -16,9 +16,9 @@ Project should compile with one warning if extracted correctly into the [nRF5_SD
 
 Flow chart:
 ----------
-![Flow chart](http://i.imgur.com/CEbscQP.png)
+![Flow chart](http://i.imgur.com/6F42aMM.png)
 ----------
 
-####Made by Håkon S. Holdhus and Lars J. Hammervold, with help from Hans Elfberg at Nordic Semiconductor.
+####Coded by Håkon S. Holdhus and Lars J. Hammervold, with help from Hans Elfberg at Nordic Semiconductor.
 ![Nordic logo](https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Nordic_Semiconductor.svg/2000px-Nordic_Semiconductor.svg.png)
 
